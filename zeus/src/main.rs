@@ -6,6 +6,7 @@ use graphics::screen::Screen;
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
 use sdl2::pixels::Color;
+use sdl2::rect::Point;
 use time::Time;
 use crate::core::time;
 use std::time::Instant;
@@ -19,7 +20,7 @@ fn main() {
         .expect("can't get event pump ");
     
 
-
+    let mut i = 0;
     
     while screen.running {
         time.update();
@@ -28,11 +29,13 @@ fn main() {
             //update()
             time.updates += 1;
             time.delta -= 1.0;
+            i = (i + 1) % 255;
+
         }
 
         time.frames += 1;
         // render 
-        screen.canvas.set_draw_color(Color::RGB(1, 64, 255));
+        screen.canvas.set_draw_color(Color::RGB(i, 0, 255));
         screen.canvas.clear();
         screen.canvas.present();
 
