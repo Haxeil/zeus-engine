@@ -2,10 +2,9 @@ mod core;
 mod graphics;
 
 use crate::core::time;
-use glfw::{Action, Context, Key};
+use glfw::{ffi::glfwGetWindowMonitor, Action, Context, Key, Window};
 use std::time::Instant;
 use time::Time;
-
 
 fn main() -> Result<(), String> {
     let mut time = Time::default();
@@ -14,20 +13,16 @@ fn main() -> Result<(), String> {
     //let event_loop = EventLoop::new();
     let mut glfw = glfw::init(glfw::FAIL_ON_ERRORS).unwrap();
 
-    // Create a windowed mode window and its OpenGL context
-    let (mut window, events) = glfw
-        .create_window(
-            1280,
-            720,
-            "Hello this is window",
-            glfw::WindowMode::Windowed,
-        )
-        .expect("Failed to create GLFW window.");
-
+    let (mut window, events) = glfw.with_connected_monitors(|glfw, m| {
+        let monitor = m.first().unwrap();
+        glfw.create_window(1280, 720, "title", glfw::WindowMode::FullScreen(monitor))
+            .expect("can't get window")
+    });
+    
     gl::load_with(|symbol| window.get_proc_address(symbol) as *const _);
     // Make the window's context current
     window.make_current();
-    
+ 
     window.set_key_polling(true);
     // insuring that the the window won't stuck at the machine refrech rate;
     glfw.set_swap_interval(glfw::SwapInterval::None);
