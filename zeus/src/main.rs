@@ -7,7 +7,7 @@ use std::{
     ffi::{c_char, CStr, CString},
     mem::size_of,
     ptr::{null, null_mut},
-    time::Instant,
+    time::Instant, alloc::alloc,
 };
 use time::Time;
 
@@ -51,7 +51,41 @@ fn main() -> Result<(), String> {
     glfw.set_swap_interval(glfw::SwapInterval::None);
     let mut i = 0_f32;
     // Loop until the user closes the window
+    unsafe {
+        // gl::ClearColor(i, 0.3, 0.3 / i, 1.0);
+        // gl::Clear(gl::COLOR_BUFFER_BIT);
 
+
+        gl::VertexAttribPointer(0, 2, gl::FLOAT, gl::FALSE, 8, 0 as *const _);
+
+        let vertex_shader = String::from(
+            "
+                #version 330 core\n
+                \n
+                layout(location = 0) in vec4 position;
+                \n
+                void main()\n
+                {\n
+                    gl_Position = position;\n
+                }\n
+                ",
+        );
+        let fragment_shader = String::from(
+            "
+                #version 330 core\n
+                \n
+                layout(location = 0) out vec4 color;
+                \n
+                void main()\n
+                {\n
+                    color = vec4(1.0, 1.0, 0.5, 1.0);\n
+                }\n
+                ",
+        );
+
+        let shader: u32 = create_shader(vertex_shader, fragment_shader);
+        gl::UseProgram(shader);
+    }
     while !window.should_close() {
         time.update();
         time.frames += 1;
@@ -61,40 +95,10 @@ fn main() -> Result<(), String> {
             time.delta -= 1.0;
             i = (i + 0.01) % 1.0;
             unsafe {
-                // gl::ClearColor(i, 0.3, 0.3 / i, 1.0);
-                // gl::Clear(gl::COLOR_BUFFER_BIT);
+                gl::ClearColor(i, 0.3, 0.3 / i, 1.0);
+                gl::Clear(gl::COLOR_BUFFER_BIT);
                 gl::DrawArrays(gl::TRIANGLES, 0, 3);
                 gl::EnableVertexAttribArray(0);
-
-                gl::VertexAttribPointer(0, 2, gl::FLOAT, gl::FALSE, 8, 0 as *const _);
-
-                let vertex_shader = String::from(
-                    "
-                        #version 330 core\n
-                        \n
-                        layout(location = 0) in vec4 position;
-                        \n
-                        void main()\n
-                        {\n
-                            gl_Position = position;\n
-                        }\n
-                        ",
-                );
-                let fragment_shader = String::from(
-                    "
-                        #version 330 core\n
-                        \n
-                        layout(location = 0) out vec4 color;
-                        \n
-                        void main()\n
-                        {\n
-                            color = vec4(1.0, 0.0, 0.0, 1.0);\n
-                        }\n
-                        ",
-                );
-
-                let shader: u32 = create_shader(vertex_shader, fragment_shader);
-                gl::UseProgram(shader);
             }
         }
 
@@ -162,7 +166,7 @@ unsafe fn compile_shader(c_type: u32, source: String) -> u32 {
     if result as u8 == gl::FALSE {
         let mut length: i32 = 0;
         gl::GetShaderiv(id, gl::INFO_LOG_LENGTH, &mut length as *mut _);
-        let message: *mut c_char = CString::new("").unwrap().into_raw();
+        let message: *mut c_char = std::alloc::alloc(std::alloc::Layout::from_size_align(length.try_into().unwrap(), 1).unwrap()) as *mut i8;
         gl::GetShaderInfoLog(id, length, &mut length as *mut _, message);
 
         println!(
