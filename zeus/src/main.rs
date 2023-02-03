@@ -49,11 +49,11 @@ fn main() -> Result<(), String> {
     }
     window.set_key_polling(true);
     // insuring that the the window won't stuck at the machine refrech rate;
-    glfw.window_hint(glfw::WindowHint::ContextVersion(glfw::ffi::CONTEXT_VERSION_MAJOR.try_into().unwrap(), 3));
-    glfw.window_hint(glfw::WindowHint::ContextVersion(glfw::ffi::CONTEXT_VERSION_MINOR.try_into().unwrap(), 3));
+
+    glfw.window_hint(glfw::WindowHint::ContextVersion(3, 2));
     glfw.window_hint(glfw::WindowHint::OpenGlForwardCompat(true));
     glfw.window_hint(glfw::WindowHint::OpenGlProfile(glfw::OpenGlProfileHint::Core));
-
+    
 
     glfw.set_swap_interval(glfw::SwapInterval::None);
     let mut i = 0_f32;
