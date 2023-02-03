@@ -1,17 +1,18 @@
 mod core;
 mod graphics;
-
 use crate::core::time;
 use glfw::{ffi::glfwGetWindowMonitor, Action, Context, Key, Window};
 use std::{
+    
     ffi::{c_char, CStr, CString},
     mem::size_of,
     ptr::{null, null_mut},
-    time::Instant, alloc::alloc,
+    time::Instant, alloc::{alloc, Layout},
 };
 use time::Time;
 
 fn main() -> Result<(), String> {
+    env_logger::init();
     let mut time = Time::default();
     let mut timer = Instant::now();
     // TODO: abstract all of GL related stuff in Screen struct;
@@ -48,9 +49,23 @@ fn main() -> Result<(), String> {
     }
     window.set_key_polling(true);
     // insuring that the the window won't stuck at the machine refrech rate;
+    glfw.window_hint(glfw::WindowHint::ContextVersion(glfw::ffi::CONTEXT_VERSION_MAJOR.try_into().unwrap(), 3));
+    glfw.window_hint(glfw::WindowHint::ContextVersion(glfw::ffi::CONTEXT_VERSION_MINOR.try_into().unwrap(), 3));
+    glfw.window_hint(glfw::WindowHint::OpenGlForwardCompat(true));
+    glfw.window_hint(glfw::WindowHint::OpenGlProfile(glfw::OpenGlProfileHint::Core));
+
+
     glfw.set_swap_interval(glfw::SwapInterval::None);
     let mut i = 0_f32;
+
+
+
+
     // Loop until the user closes the window
+//     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+// glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+// glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
+// glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     unsafe {
         // gl::ClearColor(i, 0.3, 0.3 / i, 1.0);
         // gl::Clear(gl::COLOR_BUFFER_BIT);
@@ -153,11 +168,11 @@ unsafe fn create_shader(vertex_shader: String, fragment_shader: String) -> u32 {
 unsafe fn compile_shader(c_type: u32, source: String) -> u32 {
     let id = gl::CreateShader(c_type);
     // let src = source.as_bytes().as_ptr() as *const *const i8;
-    let c_str = CString::new(source).unwrap();
-    let src = c_str.as_ptr();
-    let s_ptr = &src as *const *const i8;
+    let c_string = CString::new(source).unwrap();
+    let source = c_string.as_ptr();
+    let source = &source as *const *const i8;
 
-    gl::ShaderSource(id, 1, s_ptr, std::ptr::null());
+    gl::ShaderSource(id, 1, source, std::ptr::null());
     gl::CompileShader(id);
 
     let mut result = 0;
@@ -166,12 +181,12 @@ unsafe fn compile_shader(c_type: u32, source: String) -> u32 {
     if result as u8 == gl::FALSE {
         let mut length: i32 = 0;
         gl::GetShaderiv(id, gl::INFO_LOG_LENGTH, &mut length as *mut _);
-        let message: *mut c_char = std::alloc::alloc(std::alloc::Layout::from_size_align(length.try_into().unwrap(), 1).unwrap()) as *mut i8;
+        let layout = std::alloc::Layout::from_size_align(length.try_into().unwrap(), 1).unwrap();
+        let message: *mut c_char = std::alloc::alloc(layout) as *mut i8;
         gl::GetShaderInfoLog(id, length, &mut length as *mut _, message);
-
         println!(
             "Failed to compile: {}",
-            CStr::from_ptr(message).to_str().unwrap().to_owned()
+            CStr::from_ptr(message).to_str().unwrap()
         );
 
         gl::DeleteShader(id);
