@@ -21,9 +21,12 @@ fn main() -> Result<(), String> {
 
     let (mut window, events) = glfw.with_connected_monitors(|glfw, m| {
         let monitor = m.first().unwrap();
-        glfw.create_window(1280, 720, "title", glfw::WindowMode::Windowed)
+        glfw.create_window(1280, 720, "Zeb", glfw::WindowMode::Windowed)
             .expect("can't get window")
     });
+    glfw.window_hint(glfw::WindowHint::ContextVersion(3, 2));
+    glfw.window_hint(glfw::WindowHint::OpenGlForwardCompat(true));
+    glfw.window_hint(glfw::WindowHint::OpenGlProfile(glfw::OpenGlProfileHint::Core));
 
     gl::load_with(|symbol| window.get_proc_address(symbol) as *const _);
     // Make the window's context current
@@ -50,9 +53,7 @@ fn main() -> Result<(), String> {
     window.set_key_polling(true);
     // insuring that the the window won't stuck at the machine refrech rate;
 
-    glfw.window_hint(glfw::WindowHint::ContextVersion(3, 2));
-    glfw.window_hint(glfw::WindowHint::OpenGlForwardCompat(true));
-    glfw.window_hint(glfw::WindowHint::OpenGlProfile(glfw::OpenGlProfileHint::Core));
+
     
 
     glfw.set_swap_interval(glfw::SwapInterval::None);
