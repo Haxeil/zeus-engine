@@ -19,17 +19,39 @@ fn main() -> Result<(), String> {
     //let event_loop = EventLoop::new();
     let mut glfw = glfw::init(glfw::FAIL_ON_ERRORS).unwrap();
 
-    let (mut window, events) = glfw.with_connected_monitors(|glfw, m| {
-        let monitor = m.first().unwrap();
-        glfw.create_window(1280, 720, "Zeb", glfw::WindowMode::Windowed)
-            .expect("can't get window")
-    });
     glfw.window_hint(glfw::WindowHint::ContextVersion(3, 2));
     glfw.window_hint(glfw::WindowHint::OpenGlForwardCompat(true));
     glfw.window_hint(glfw::WindowHint::OpenGlProfile(glfw::OpenGlProfileHint::Core));
 
+    #[cfg(target_os = "macos")]
+    println!("I'm apple machine");
+
+    #[cfg(target_os = "macos")]
+    unsafe {
+        glfw::ffi::glfwWindowHint(glfw::ffi::GLFW_OPENGL_FORWARD_COMPAT, glfw::ffi::GL_TRUE);
+    }
+    let (mut window, events) = glfw.with_connected_monitors(|glfw, m| {
+        let _monitor = m.first().unwrap();
+        glfw.create_window(1280, 720, "Zeb", glfw::WindowMode::Windowed)
+            .expect("can't get window")
+    });
+
+
+
+
     gl::load_with(|symbol| window.get_proc_address(symbol) as *const _);
     // Make the window's context current
+    let mut vao = 0;
+    let mut vbo = 0;
+    let mut ebo = 0;
+    unsafe {
+        gl::GenVertexArrays(1, &mut vao);
+        gl::GenBuffers(1, &mut vbo);
+        gl::GenBuffers(1, &mut ebo);
+        // Bind the Vertex Array Object first, then bind and set vertex buffer(s) and attribute pointer(s).
+        gl::BindVertexArray(vao);
+    }
+
     window.make_current();
     unsafe {
         let version = CStr::from_ptr(gl::GetString(gl::VERSION) as *const i8)
@@ -45,13 +67,13 @@ fn main() -> Result<(), String> {
         gl::BindBuffer(gl::ARRAY_BUFFER, buffer);
         gl::BufferData(
             gl::ARRAY_BUFFER,
-            6 * size_of::<&f32>() as isize,
+            positions.len() as isize * size_of::<&f32>() as isize,
             positions.as_ptr() as *const _,
             gl::STATIC_DRAW,
         )
     }
     window.set_key_polling(true);
-    // insuring that the the window won't stuck at the machine refrech rate;
+    // insuring that the the window won't stuck at the machine refresh rate;
 
 
     
@@ -62,14 +84,9 @@ fn main() -> Result<(), String> {
 
 
 
-    // Loop until the user closes the window
-//     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-// glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-// glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
-// glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
     unsafe {
-        // gl::ClearColor(i, 0.3, 0.3 / i, 1.0);
-        // gl::Clear(gl::COLOR_BUFFER_BIT);
+
 
 
         gl::VertexAttribPointer(0, 2, gl::FLOAT, gl::FALSE, 8, 0 as *const _);
@@ -173,7 +190,7 @@ unsafe fn compile_shader(c_type: u32, source: String) -> u32 {
     let source = c_string.as_ptr();
     let source = &source as *const *const i8;
 
-    gl::ShaderSource(id, 1, source, std::ptr::null());
+    gl::ShaderSource(id, 1, source, null());
     gl::CompileShader(id);
 
     let mut result = 0;
@@ -182,8 +199,8 @@ unsafe fn compile_shader(c_type: u32, source: String) -> u32 {
     if result as u8 == gl::FALSE {
         let mut length: i32 = 0;
         gl::GetShaderiv(id, gl::INFO_LOG_LENGTH, &mut length as *mut _);
-        let layout = std::alloc::Layout::from_size_align(length.try_into().unwrap(), 1).unwrap();
-        let message: *mut c_char = std::alloc::alloc(layout) as *mut i8;
+        let layout = Layout::from_size_align(length.try_into().unwrap(), 1).unwrap();
+        let message: *mut c_char = alloc(layout) as *mut i8;
         gl::GetShaderInfoLog(id, length, &mut length as *mut _, message);
         println!(
             "Failed to compile: {}",

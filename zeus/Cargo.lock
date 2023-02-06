@@ -358,5 +358,4 @@ dependencies = [
  "env_logger",
  "gl",
  "glfw",
- "libc",
 ]
