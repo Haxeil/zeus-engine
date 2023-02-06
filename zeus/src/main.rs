@@ -1,12 +1,12 @@
 mod core;
 mod graphics;
 use crate::core::time;
-use glfw::{ffi::glfwGetWindowMonitor, Action, Context, Key, Window};
+use glfw::{Action, Context, Key};
 use std::{
     
     ffi::{c_char, CStr, CString},
     mem::size_of,
-    ptr::{null, null_mut},
+    ptr::{null},
     time::Instant, alloc::{alloc, Layout},
 };
 use time::Time;
@@ -28,7 +28,7 @@ fn main() -> Result<(), String> {
 
     #[cfg(target_os = "macos")]
     unsafe {
-        glfw::ffi::glfwWindowHint(glfw::ffi::OPENGL_FORWARD_COMPAT, true);
+        glfw::ffi::glfwWindowHint(glfw::ffi::OPENGL_FORWARD_COMPAT, 1);
     }
     let (mut window, events) = glfw.with_connected_monitors(|glfw, m| {
         let _monitor = m.first().unwrap();
