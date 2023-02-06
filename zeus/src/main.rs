@@ -1,3 +1,5 @@
+extern crate alloc;
+
 mod core;
 mod graphics;
 use crate::core::time;
@@ -30,6 +32,7 @@ fn main() -> Result<(), String> {
     unsafe {
         glfw::ffi::glfwWindowHint(glfw::ffi::OPENGL_FORWARD_COMPAT, 1);
     }
+
     let (mut window, events) = glfw.with_connected_monitors(|glfw, m| {
         let _monitor = m.first().unwrap();
         glfw.create_window(1280, 720, "Zeb", glfw::WindowMode::Windowed)
@@ -186,7 +189,7 @@ unsafe fn create_shader(vertex_shader: String, fragment_shader: String) -> u32 {
 unsafe fn compile_shader(c_type: u32, source: String) -> u32 {
     let id = gl::CreateShader(c_type);
     // let src = source.as_bytes().as_ptr() as *const *const i8;
-    let c_string = CString::new(source).unwrap();
+    let c_string = alloc::ffi::CString::new(source).unwrap();
     let source = c_string.as_ptr();
     let source = &source as *const *const i8;
 
