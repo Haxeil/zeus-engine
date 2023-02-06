@@ -28,7 +28,7 @@ fn main() -> Result<(), String> {
 
     #[cfg(target_os = "macos")]
     unsafe {
-        glfw::ffi::glfwWindowHint(glfw::ffi::GLFW_OPENGL_FORWARD_COMPAT, glfw::ffi::GL_TRUE);
+        glfw::ffi::glfwWindowHint(glfw::ffi::OPENGL_FORWARD_COMPAT, true);
     }
     let (mut window, events) = glfw.with_connected_monitors(|glfw, m| {
         let _monitor = m.first().unwrap();
