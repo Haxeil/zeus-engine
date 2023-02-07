@@ -68,31 +68,50 @@ fn main() -> Result<(), io::Error> {
 
         println!("{:?}", version);
 
-        let mut buffer: u32 = 1;
-        let positions: [f32; 6] = [-0.5, -0.5, 0.0, 0.5, 0.5, -0.5];
+        let positions: [f32; 4 * 2] = [
+            -0.5, -0.5,
+            0.5, -0.5,
+            0.5, 0.5,
+            -0.5, 0.5,
+        ];
 
+        let indicies: [u32; 3 * 2] = [
+            0, 1, 2,
+            2, 3, 0
+        ];
+
+        let mut buffer: u32 = 0;
         gl::GenBuffers(1, &mut buffer);
         gl::BindBuffer(gl::ARRAY_BUFFER, buffer);
         gl::BufferData(
             gl::ARRAY_BUFFER,
-            positions.len() as isize * size_of::<&f32>() as isize,
+            12 as isize * size_of::<f32>() as isize,
             positions.as_ptr() as *const _,
             gl::STATIC_DRAW,
-        )
+        );
+
+        gl::VertexAttribPointer(0, 2, gl::FLOAT, gl::FALSE, 8, 0 as *const _);
+
+        let shaders = parse_shader("src/res/shaders/Basic.shader")?;
+        let shader: u32 = create_shader(shaders.vertex_shader, shaders.fragment_shader);
+        gl::UseProgram(shader);
+
+        let mut ibo: u32 = 0;
+        gl::GenBuffers(1, &mut ibo);
+        gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, ibo);
+        gl::BufferData(
+            gl::ELEMENT_ARRAY_BUFFER,
+            6 as isize * size_of::<f32>() as isize,
+            indicies.as_ptr() as *const _,
+            gl::STATIC_DRAW,
+        );
+
     }
     window.set_key_polling(true);
     // insuring that the the window won't stuck at the machine refresh rate;
 
     glfw.set_swap_interval(glfw::SwapInterval::None);
     let mut i = 0_f32;
-
-    unsafe {
-        gl::VertexAttribPointer(0, 2, gl::FLOAT, gl::FALSE, 8, 0 as *const _);
-        let shaders = parse_shader("src/res/shaders/Basic.shader")?;
-        let shader: u32 = create_shader(shaders.vertex_shader, shaders.fragment_shader);
-        gl::UseProgram(shader);
-    }
-
 
     while !window.should_close() {
         time.update();
@@ -105,7 +124,7 @@ fn main() -> Result<(), io::Error> {
             unsafe {
                 gl::ClearColor(i, 0.3, 0.3 / i, 1.0);
                 gl::Clear(gl::COLOR_BUFFER_BIT);
-                gl::DrawArrays(gl::TRIANGLES, 0, 3);
+                gl::DrawElements(gl::TRIANGLES, 6, gl::UNSIGNED_INT, null());
                 gl::EnableVertexAttribArray(0);
             }
         }
