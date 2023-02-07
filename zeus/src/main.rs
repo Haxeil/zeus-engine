@@ -12,9 +12,11 @@ use std::{
     time::Instant, alloc::{alloc, Layout},
 };
 use std::fs::File;
-use std::io::{BufRead, BufReader};
+use std::io::{BufRead, BufReader, Error};
 use std::ops::Add;
+use std::path::Path;
 use time::Time;
+use crate::core::shader_source::ShaderSource;
 
 fn main() -> Result<(), io::Error> {
     env_logger::init();
@@ -81,53 +83,17 @@ fn main() -> Result<(), io::Error> {
     window.set_key_polling(true);
     // insuring that the the window won't stuck at the machine refresh rate;
 
-
-    
-
     glfw.set_swap_interval(glfw::SwapInterval::None);
     let mut i = 0_f32;
 
-
-
-
-
     unsafe {
-
-
-
         gl::VertexAttribPointer(0, 2, gl::FLOAT, gl::FALSE, 8, 0 as *const _);
-
-        
-        let file = File::open("src/res/shaders/Basic.shader")?;
-        let mut vertex_shader = String::new();
-        let mut fragment_shader = String::new();
-        let reader = BufReader::new(file);
-        let mut is_fragment_shader = false;
-
-        for line in reader.lines() {
-            let line = line?;
-            if line.ends_with("vertex") {
-                continue;
-            }
-
-            if line.ends_with("fragment") {
-                is_fragment_shader = true;
-                continue;
-            }
-            if is_fragment_shader {
-                fragment_shader.push_str(&line.trim());
-                fragment_shader.push_str("\n");
-            } else {
-                vertex_shader.push_str(&line.trim());
-                vertex_shader.push_str("\n");
-            }
-
-        }
-
-
-        let shader: u32 = create_shader(vertex_shader, fragment_shader);
+        let shaders = parse_shader("src/res/shaders/Basic.shader")?;
+        let shader: u32 = create_shader(shaders.vertex_shader, shaders.fragment_shader);
         gl::UseProgram(shader);
     }
+
+
     while !window.should_close() {
         time.update();
         time.frames += 1;
@@ -216,11 +182,42 @@ unsafe fn compile_shader(c_type: u32, source: String) -> u32 {
             CStr::from_ptr(message).to_str().unwrap()
         );
 
-        gl::DeleteShader(id);
+        gl::DeleteProgram(id);
         return 0;
     }
     id
 }
 
+unsafe fn parse_shader(path: &str) -> Result<ShaderSource, Error> {
+    let file = File::open(path)?;
+    let mut shaders = ShaderSource::new();
+    let reader = BufReader::new(file);
+    let mut is_fragment_shader = false;
+
+    for line in reader.lines() {
+        let line = line?;
+        if line.ends_with("vertex") {
+            continue;
+        }
+
+        if line.ends_with("fragment") {
+            is_fragment_shader = true;
+            continue;
+        }
+
+        if is_fragment_shader {
+            shaders.fragment_shader.push_str(line.trim());
+            shaders.fragment_shader.push_str("\n");
+        } else {
+            shaders.vertex_shader.push_str(line.trim());
+            shaders.vertex_shader.push_str("\n");
+        }
+
+    }
+
+
+
+    Ok(shaders)
+}
 
 // TODO: Abstract all of this into Screen struct
