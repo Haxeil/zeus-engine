@@ -5,15 +5,18 @@ mod graphics;
 use crate::core::time;
 use glfw::{Action, Context, Key};
 use std::{
-    
+    io,
     ffi::{c_char, CStr, CString},
     mem::size_of,
     ptr::{null},
     time::Instant, alloc::{alloc, Layout},
 };
+use std::fs::File;
+use std::io::{BufRead, BufReader};
+use std::ops::Add;
 use time::Time;
 
-fn main() -> Result<(), String> {
+fn main() -> Result<(), io::Error> {
     env_logger::init();
     let mut time = Time::default();
     let mut timer = Instant::now();
@@ -94,30 +97,33 @@ fn main() -> Result<(), String> {
 
         gl::VertexAttribPointer(0, 2, gl::FLOAT, gl::FALSE, 8, 0 as *const _);
 
-        let vertex_shader = String::from(
-            "
-                #version 330 core\n
-                \n
-                layout(location = 0) in vec4 position;
-                \n
-                void main()\n
-                {\n
-                    gl_Position = position;\n
-                }\n
-                ",
-        );
-        let fragment_shader = String::from(
-            "
-                #version 330 core\n
-                \n
-                layout(location = 0) out vec4 color;
-                \n
-                void main()\n
-                {\n
-                    color = vec4(1.0, 1.0, 0.5, 1.0);\n
-                }\n
-                ",
-        );
+        
+        let file = File::open("src/res/shaders/Basic.shader")?;
+        let mut vertex_shader = String::new();
+        let mut fragment_shader = String::new();
+        let reader = BufReader::new(file);
+        let mut is_fragment_shader = false;
+
+        for line in reader.lines() {
+            let line = line?;
+            if line.ends_with("vertex") {
+                continue;
+            }
+
+            if line.ends_with("fragment") {
+                is_fragment_shader = true;
+                continue;
+            }
+            if is_fragment_shader {
+                fragment_shader.push_str(&line.trim());
+                fragment_shader.push_str("\n");
+            } else {
+                vertex_shader.push_str(&line.trim());
+                vertex_shader.push_str("\n");
+            }
+
+        }
+
 
         let shader: u32 = create_shader(vertex_shader, fragment_shader);
         gl::UseProgram(shader);
