@@ -6,6 +6,7 @@ use crate::core::time;
 use crate::graphics::renderer::*;
 
 use crate::core::shader_source::ShaderSource;
+use crate::graphics::index_buffer::IndexBuffer;
 use crate::graphics::vertex_buffer::VertexBuffer;
 use gl::types::GLchar;
 use glfw::{Action, Context, Key};
@@ -23,7 +24,6 @@ use std::{
     time::Instant,
 };
 use time::Time;
-use crate::graphics::index_buffer::IndexBuffer;
 
 fn main() -> Result<(), Box<dyn Error>> {
     env_logger::init();
@@ -75,7 +75,6 @@ fn main() -> Result<(), Box<dyn Error>> {
         println!("{:?}", version);
     }
 
-
     let positions: [f32; 4 * 2] = [-0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, 0.5];
 
     let indicies: [u32; 3 * 2] = [0, 1, 2, 2, 3, 0];
@@ -85,7 +84,6 @@ fn main() -> Result<(), Box<dyn Error>> {
         positions.as_ptr() as *const c_void,
         12 as isize * size_of::<f32>() as isize,
     );
-
 
     log_gl_error!(gl::VertexAttribPointer(
         0,
@@ -98,11 +96,9 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let mut index_buffer = IndexBuffer::new().construct(indicies.as_ptr() as *const _, 6);
 
-    let shaders = unsafe {parse_shader("src/res/shaders/Basic.shader")?};
-    shader = unsafe {create_shader(shaders.vertex_shader, shaders.fragment_shader)?};
+    let shaders = unsafe { parse_shader("src/res/shaders/Basic.shader")? };
+    shader = unsafe { create_shader(shaders.vertex_shader, shaders.fragment_shader)? };
     log_gl_error!(gl::UseProgram(shader));
-
-
 
     window.set_key_polling(true);
     // insuring that the the window won't stuck at the machine refresh rate;

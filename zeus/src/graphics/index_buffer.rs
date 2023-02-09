@@ -16,33 +16,30 @@ impl IndexBuffer {
         }
     }
 
-    pub fn construct(mut self, data: *const c_void, count: i32) -> Self{
+    pub fn construct(mut self, data: *const c_void, count: i32) -> Self {
         self.count = count;
         unsafe {
             log_gl_error!(gl::GenBuffers(1, &mut self.renderer_id));
             log_gl_error!(gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, self.renderer_id));
             log_gl_error!(gl::BufferData(
-            gl::ELEMENT_ARRAY_BUFFER,
-            count as isize * size_of::<gl::types::GLuint>() as isize,
-            data.into(),
-            gl::STATIC_DRAW,
-        ));
+                gl::ELEMENT_ARRAY_BUFFER,
+                count as isize * size_of::<gl::types::GLuint>() as isize,
+                data.into(),
+                gl::STATIC_DRAW,
+            ));
         }
         self
-
     }
 
     pub fn bind(&self) {
         unsafe {
             log_gl_error!(gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, self.renderer_id));
-
         }
     }
 
     pub fn unbind() {
         unsafe {
             log_gl_error!(gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, 0));
-
         }
     }
 
@@ -56,8 +53,6 @@ impl Drop for IndexBuffer {
     fn drop(&mut self) {
         unsafe {
             log_gl_error!(gl::DeleteBuffers(1, &self.renderer_id));
-
         }
     }
 }
-

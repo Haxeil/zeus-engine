@@ -29,11 +29,9 @@ macro_rules! log_gl_error {
     };
 
     ($stmt:stmt) => {
-
         unsafe { gl_clear_errors() };
         let name = stringify!($stmt);
         $stmt;
         unsafe { gl_check_error(name, file!(), line!()) };
     };
 }
-
