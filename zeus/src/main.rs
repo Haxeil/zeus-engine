@@ -151,7 +151,7 @@ fn main() -> Result<(), Box::<dyn Error>> {
             timer = Instant::now();
 
             window.set_title(&format!(
-                "Engine | {} up, {} fps, {} delta",
+                "Zeus | {} up, {} fps, {} delta",
                 time.updates, time.frames, time.delta
             ));
 
