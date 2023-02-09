@@ -132,9 +132,8 @@ fn main() -> Result<(), Box::<dyn Error>> {
             //update()
             time.updates += 1;
             time.delta -= 1.0;
-            i = (i + 0.01) % 1.0;
             unsafe {
-                log_gl_error!(gl::ClearColor(i, 0.3, 0.3 / i, 1.0));
+                log_gl_error!(gl::ClearColor(0.12, 0.12, 0.13, 1.0));
                 log_gl_error!(gl::Clear(gl::COLOR_BUFFER_BIT));
                 log_gl_error!(gl::DrawElements(gl::TRIANGLES, 6, gl::UNSIGNED_INT, null()));
                 log_gl_error!(gl::EnableVertexAttribArray(0));
