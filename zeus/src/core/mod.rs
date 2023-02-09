@@ -1,2 +1,2 @@
-pub(crate) mod time;
 pub(crate) mod shader_source;
+pub(crate) mod time;
