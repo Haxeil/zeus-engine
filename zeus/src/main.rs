@@ -69,10 +69,6 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let mut shader = 0;
 
-    let mut vao = 0;
-    log_gl_error!(gl::GenVertexArrays(1, &mut vao));
-    log_gl_error!(gl::BindVertexArray(vao));
-
     let vertex_array = VertexArray::new().construct();
 
     let mut vertex_buffer = VertexBuffer::new().construct(
