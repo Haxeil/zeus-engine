@@ -75,7 +75,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     );
 
     let mut layout = VertexBufferLayout::new();
-    layout.push::<f32>(2);
+    layout.push::<i32>(2);
     vertex_array.add_buffer(&vertex_buffer, &layout);
 
     let index_buffer = IndexBuffer::new().construct(indicies.as_ptr() as *const _, 6);
@@ -89,10 +89,10 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     glfw.set_swap_interval(glfw::SwapInterval::Adaptive);
 
-    // index_buffer.unbind();
-    // shader.unbind();
-    // log_gl_error!(gl::BindBuffer(gl::ARRAY_BUFFER, 0));
-    // log_gl_error!(gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, 0));
+    index_buffer.unbind();
+    vertex_buffer.unbind();
+    vertex_array.unbind();
+    shader.unbind();
 
     let mut i: f32 = 0.0;
     let mut increament = 0.05_f32;
@@ -104,22 +104,21 @@ fn main() -> Result<(), Box<dyn Error>> {
             //update()
             time.updates += 1;
             time.delta -= 1.0;
-            shader.bind();
-            shader.set_uniform_4f("u_Color", 0.3, i, 0.0, 1.0);
             log_gl_error!(gl::Clear(gl::COLOR_BUFFER_BIT));
-            log_gl_error!(gl::DrawElements(gl::TRIANGLES, 6, gl::UNSIGNED_INT, null()));
 
+            shader.bind();
             vertex_array.bind();
             index_buffer.bind();
 
-            i += increament;
+            shader.set_uniform_4f("u_Color", 1.0 / i, i, 0.0, 1.0);
+            log_gl_error!(gl::DrawElements(gl::TRIANGLES, 6, gl::UNSIGNED_INT, null()));
 
-            if i > 1.0 {
+            i += increament * time.delta as f32;
+
+            if i >= 1.0 {
                 increament = -0.05;
-            } else if i < 1.0 {
+            } else if i < 0.0 {
                 increament = 0.05;
-            } else {
-                i = 0.0;
             }
 
             log_gl_error!(gl::ClearColor(0.12, 0.12, 0.13, 1.0));
@@ -135,8 +134,8 @@ fn main() -> Result<(), Box<dyn Error>> {
             timer = Instant::now();
 
             window.set_title(&format!(
-                "Zeus | {} up, {} fps, {} delta",
-                time.updates, time.frames, time.delta
+                "Zeus | {} up, {} fps, {} delta, i: {}",
+                time.updates, time.frames, time.delta, i
             ));
 
             time.updates = 0;
