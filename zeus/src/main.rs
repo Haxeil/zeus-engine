@@ -180,7 +180,6 @@ unsafe fn create_shader(
     log_gl_error!(gl::ValidateProgram(program));
     // Drop Shaders;
     log_gl_error!(gl::DeleteShader(vs));
-    log_gl_error!(gl::DeleteShader(vs));
 
     Ok(program)
 }
