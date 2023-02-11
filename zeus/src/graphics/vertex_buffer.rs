@@ -11,36 +11,29 @@ impl VertexBuffer {
         Self { renderer_id: 0 }
     }
     pub fn construct(mut self, data: *const c_void, size: isize) -> Self {
-        unsafe {
-            log_gl_error!(gl::GenBuffers(1, &mut self.renderer_id));
-            log_gl_error!(gl::BindBuffer(gl::ARRAY_BUFFER, self.renderer_id));
-            log_gl_error!(gl::BufferData(
-                gl::ARRAY_BUFFER,
-                size,
-                data,
-                gl::STATIC_DRAW,
-            ));
-        }
+        log_gl_error!(gl::GenBuffers(1, &mut self.renderer_id));
+        log_gl_error!(gl::BindBuffer(gl::ARRAY_BUFFER, self.renderer_id));
+        log_gl_error!(gl::BufferData(
+            gl::ARRAY_BUFFER,
+            size,
+            data,
+            gl::STATIC_DRAW,
+        ));
+
         self
     }
 
     pub fn bind(&self) {
-        unsafe {
-            log_gl_error!(gl::BindBuffer(gl::ARRAY_BUFFER, self.renderer_id));
-        }
+        log_gl_error!(gl::BindBuffer(gl::ARRAY_BUFFER, self.renderer_id));
     }
 
-    pub fn unbind() {
-        unsafe {
-            log_gl_error!(gl::BindBuffer(gl::ARRAY_BUFFER, 0));
-        }
+    pub fn unbind(&self) {
+        log_gl_error!(gl::BindBuffer(gl::ARRAY_BUFFER, 0));
     }
 }
 
 impl Drop for VertexBuffer {
     fn drop(&mut self) {
-        unsafe {
-            log_gl_error!(gl::DeleteBuffers(1, &self.renderer_id));
-        }
+        log_gl_error!(gl::DeleteBuffers(1, &self.renderer_id));
     }
 }

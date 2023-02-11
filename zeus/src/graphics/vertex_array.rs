@@ -40,7 +40,7 @@ impl VertexArray {
         log_gl_error!(gl::BindVertexArray(self.renderer_id))
     }
 
-    pub fn unbind() {
+    pub fn unbind(&self) {
         log_gl_error!(gl::BindVertexArray(0))
     }
 }

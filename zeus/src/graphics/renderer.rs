@@ -25,13 +25,13 @@ macro_rules! log_gl_error {
             gl_clear_errors();
             $func;
             gl_check_error(stringify!($func), file!(), line!())
-        };
+        }
     };
 
     ($stmt:stmt) => {
         unsafe { gl_clear_errors() };
         let name = stringify!($stmt);
-        $stmt;
+        $stmt
         unsafe { gl_check_error(name, file!(), line!()) };
     };
 }

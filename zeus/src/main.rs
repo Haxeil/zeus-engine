@@ -5,8 +5,8 @@ mod graphics;
 use crate::core::time;
 use crate::graphics::renderer::*;
 
-use crate::core::shader_source::ShaderSource;
 use crate::graphics::index_buffer::IndexBuffer;
+use crate::graphics::shader::*;
 use crate::graphics::vertex_array::VertexArray;
 use crate::graphics::vertex_buffer::VertexBuffer;
 use crate::graphics::vertex_buffer_layout::VertexBufferLayout;
@@ -67,11 +67,9 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let indicies: [u32; 3 * 2] = [0, 1, 2, 2, 3, 0];
 
-    let mut shader = 0;
-
     let vertex_array = VertexArray::new().construct();
 
-    let mut vertex_buffer = VertexBuffer::new().construct(
+    let vertex_buffer = VertexBuffer::new().construct(
         positions.as_ptr() as *const c_void,
         12 as isize * size_of::<f32>() as isize,
     );
@@ -80,19 +78,21 @@ fn main() -> Result<(), Box<dyn Error>> {
     layout.push::<f32>(2);
     vertex_array.add_buffer(&vertex_buffer, &layout);
 
-    let mut index_buffer = IndexBuffer::new().construct(indicies.as_ptr() as *const _, 6);
+    let index_buffer = IndexBuffer::new().construct(indicies.as_ptr() as *const _, 6);
 
-    let shaders = unsafe { parse_shader("src/res/shaders/Basic.shader")? };
-    shader = unsafe { create_shader(shaders.vertex_shader, shaders.fragment_shader)? };
-    log_gl_error!(gl::UseProgram(shader));
+    let shader = Shader::new("src/res/shaders/Basic.shader").construct()?;
+    shader.bind();
+    shader.set_uniform_4f("u_Color", 0.3, 0.1, 0.0, 1.0);
 
     window.set_key_polling(true);
     // insuring that the the window won't stuck at the machine refresh rate;
 
     glfw.set_swap_interval(glfw::SwapInterval::Adaptive);
 
-    log_gl_error!(let location = unsafe {gl::GetUniformLocation(shader, "u_Color".as_ptr() as *const GLchar)});
-    assert_ne!(location, -1);
+    // index_buffer.unbind();
+    // shader.unbind();
+    // log_gl_error!(gl::BindBuffer(gl::ARRAY_BUFFER, 0));
+    // log_gl_error!(gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, 0));
 
     let mut i: f32 = 0.0;
     let mut increament = 0.05_f32;
@@ -104,26 +104,25 @@ fn main() -> Result<(), Box<dyn Error>> {
             //update()
             time.updates += 1;
             time.delta -= 1.0;
-            unsafe {
-                log_gl_error!(gl::Clear(gl::COLOR_BUFFER_BIT));
-                log_gl_error!(gl::Uniform4f(location, i, 0.5 / i, 0.1, 1.0));
-                log_gl_error!(gl::DrawElements(gl::TRIANGLES, 6, gl::UNSIGNED_INT, null()));
+            shader.bind();
+            shader.set_uniform_4f("u_Color", 0.3, i, 0.0, 1.0);
+            log_gl_error!(gl::Clear(gl::COLOR_BUFFER_BIT));
+            log_gl_error!(gl::DrawElements(gl::TRIANGLES, 6, gl::UNSIGNED_INT, null()));
 
-                vertex_array.bind();
-                index_buffer.bind();
+            vertex_array.bind();
+            index_buffer.bind();
 
-                i += increament;
+            i += increament;
 
-                if i > 1.0 {
-                    increament = -0.05;
-                } else if i < 1.0 {
-                    increament = 0.05;
-                } else {
-                    i = 0.0;
-                }
-
-                log_gl_error!(gl::ClearColor(0.12, 0.12, 0.13, 1.0));
+            if i > 1.0 {
+                increament = -0.05;
+            } else if i < 1.0 {
+                increament = 0.05;
+            } else {
+                i = 0.0;
             }
+
+            log_gl_error!(gl::ClearColor(0.12, 0.12, 0.13, 1.0));
         }
 
         time.frames += 1;
@@ -156,93 +155,6 @@ fn main() -> Result<(), Box<dyn Error>> {
     }
 
     Ok(())
-}
-
-unsafe fn create_shader(
-    vertex_shader: String,
-    fragment_shader: String,
-) -> Result<u32, Box<dyn Error>> {
-    let program = gl::CreateProgram();
-    let vs = compile_shader(gl::VERTEX_SHADER, vertex_shader)?;
-    let fs = compile_shader(gl::FRAGMENT_SHADER, fragment_shader)?;
-    // Attach Shaders;
-    log_gl_error!(gl::AttachShader(program, vs));
-    log_gl_error!(gl::AttachShader(program, fs));
-    log_gl_error!(gl::LinkProgram(program));
-    log_gl_error!(gl::ValidateProgram(program));
-    // Drop Shaders;
-    log_gl_error!(gl::DeleteShader(vs));
-
-    Ok(program)
-}
-
-unsafe fn compile_shader(c_type: u32, source: String) -> Result<u32, Box<dyn Error>> {
-    let id = gl::CreateShader(c_type);
-    // let src = source.as_bytes().as_ptr() as *const *const i8;
-    let c_string = alloc::ffi::CString::new(source)?;
-    let source = c_string.as_ptr();
-    let source = &source as *const *const i8;
-
-    log_gl_error!(gl::ShaderSource(id, 1, source, null()));
-    log_gl_error!(gl::CompileShader(id));
-
-    let mut result = 0;
-    log_gl_error!(gl::GetShaderiv(
-        id,
-        gl::COMPILE_STATUS,
-        &mut result as *mut i32
-    ));
-
-    if result as u8 == gl::FALSE {
-        let mut length: i32 = 0;
-        log_gl_error!(gl::GetShaderiv(
-            id,
-            gl::INFO_LOG_LENGTH,
-            &mut length as *mut _
-        ));
-        let layout = Layout::from_size_align(length.try_into()?, 1)?;
-        let message: *mut c_char = alloc(layout) as *mut i8;
-        log_gl_error!(gl::GetShaderInfoLog(
-            id,
-            length,
-            &mut length as *mut _,
-            message
-        ));
-        println!("Failed to compile: {}", CStr::from_ptr(message).to_str()?);
-
-        log_gl_error!(gl::DeleteProgram(id));
-        return Ok(0);
-    }
-    Ok(id)
-}
-
-unsafe fn parse_shader(path: &str) -> Result<ShaderSource, Box<dyn Error>> {
-    let file = File::open(path)?;
-    let mut shaders = ShaderSource::new();
-    let reader = BufReader::new(file);
-    let mut is_fragment_shader = false;
-
-    for line in reader.lines() {
-        let line = line?;
-        if line.ends_with("vertex") {
-            continue;
-        }
-
-        if line.ends_with("fragment") {
-            is_fragment_shader = true;
-            continue;
-        }
-
-        if is_fragment_shader {
-            shaders.fragment_shader.push_str(line.trim());
-            shaders.fragment_shader.push_str("\n");
-        } else {
-            shaders.vertex_shader.push_str(line.trim());
-            shaders.vertex_shader.push_str("\n");
-        }
-    }
-
-    Ok(shaders)
 }
 
 // TODO: Abstract all of this into Screen struct
