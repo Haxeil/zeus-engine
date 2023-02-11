@@ -50,7 +50,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let (mut window, events) = glfw.with_connected_monitors(|glfw, m| {
         let _monitor = m.first().unwrap();
-        glfw.create_window(1280, 720, "Zeb", glfw::WindowMode::Windowed)
+        glfw.create_window(1280, 720, "Zeus", glfw::WindowMode::Windowed)
             .expect("can't create window")
     });
 
