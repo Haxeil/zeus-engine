@@ -1,8 +1,6 @@
-use crate::graphics::renderer::*;
 use gl;
 use std::mem::size_of;
 use std::ops::{Add, Mul};
-use std::process::Output;
 
 pub struct VertexBufferElement {
     pub v_type: GlType,
@@ -21,10 +19,10 @@ impl VertexBufferElement {
 
     pub fn size_of_current_type(&self) -> u32 {
         match self.v_type {
-            GlType::gl_uint(_) => size_of::<gl::types::GLuint>() as u32,
-            GlType::gl_int(_) => size_of::<gl::types::GLint>() as u32,
-            GlType::gl_float(_) => size_of::<gl::types::GLfloat>() as u32,
-            GlType::gl_char(_) => size_of::<gl::types::GLchar>() as u32,
+            GlType::GlUint(_) => size_of::<gl::types::GLuint>() as u32,
+            GlType::GlInt(_) => size_of::<gl::types::GLint>() as u32,
+            GlType::GlFloat(_) => size_of::<gl::types::GLfloat>() as u32,
+            GlType::GlChar(_) => size_of::<gl::types::GLchar>() as u32,
             _ => todo!(),
         }
     }
@@ -50,25 +48,25 @@ impl VertexBufferLayout {
         let s = size_of::<T>();
         if s == size_of::<i32>() {
             self.elements.push(VertexBufferElement::new(
-                GlType::gl_int(0x1404),
+                GlType::GlInt(0x1404),
                 count,
                 false,
             ));
         } else if s == size_of::<u32>() {
             self.elements.push(VertexBufferElement::new(
-                GlType::gl_uint(0x1405),
+                GlType::GlUint(0x1405),
                 count,
                 false,
             ));
         } else if s == size_of::<f32>() {
             self.elements.push(VertexBufferElement::new(
-                GlType::gl_float(0x1406),
+                GlType::GlChar(0x1406),
                 count,
                 false,
             ));
         } else if s == size_of::<char>() {
             self.elements.push(VertexBufferElement::new(
-                GlType::gl_char(0x1404),
+                GlType::GlChar(0x1404),
                 count,
                 true,
             ));
@@ -79,19 +77,19 @@ impl VertexBufferLayout {
 }
 
 pub enum GlType {
-    gl_uint(u32),
-    gl_int(u32),
-    gl_float(u32),
-    gl_char(u32),
+    GlUint(u32),
+    GlInt(u32),
+    GlFloat(u32),
+    GlChar(u32),
 }
 
 impl GlType {
     pub fn get_value(&self) -> u32 {
         match *self {
-            GlType::gl_uint(value) => value,
-            GlType::gl_int(value) => value,
-            GlType::gl_float(value) => value,
-            GlType::gl_char(value) => value,
+            GlType::GlUint(value) => value,
+            GlType::GlInt(value) => value,
+            GlType::GlFloat(value) => value,
+            GlType::GlChar(value) => value,
         }
     }
 }

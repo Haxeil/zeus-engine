@@ -10,21 +10,10 @@ use crate::graphics::shader::*;
 use crate::graphics::vertex_array::VertexArray;
 use crate::graphics::vertex_buffer::VertexBuffer;
 use crate::graphics::vertex_buffer_layout::VertexBufferLayout;
-use gl::types::GLchar;
 use glfw::{Action, Context, Key};
-use std::ffi::c_void;
-use std::fs::File;
-use std::io::{BufRead, BufReader};
-use std::ops::Add;
-use std::path::Path;
-use std::{
-    alloc::{alloc, Layout},
-    error::Error,
-    ffi::{c_char, CStr, CString},
-    mem::size_of,
-    ptr::null,
-    time::Instant,
-};
+use std::ffi::{c_void, CStr};
+use std::time::Instant;
+use std::{error::Error, mem::size_of, ptr::null};
 use time::Time;
 
 fn main() -> Result<(), Box<dyn Error>> {
@@ -50,7 +39,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let (mut window, events) = glfw.with_connected_monitors(|glfw, m| {
         let _monitor = m.first().unwrap();
-        glfw.create_window(1280, 720, "Zeus", glfw::WindowMode::Windowed)
+        glfw.create_window(820, 400, "Zeus", glfw::WindowMode::Windowed)
             .expect("can't create window")
     });
 
