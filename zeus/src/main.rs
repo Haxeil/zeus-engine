@@ -7,7 +7,9 @@ use crate::graphics::renderer::*;
 
 use crate::core::shader_source::ShaderSource;
 use crate::graphics::index_buffer::IndexBuffer;
+use crate::graphics::vertex_array::VertexArray;
 use crate::graphics::vertex_buffer::VertexBuffer;
+use crate::graphics::vertex_buffer_layout::VertexBufferLayout;
 use gl::types::GLchar;
 use glfw::{Action, Context, Key};
 use std::ffi::c_void;
@@ -24,8 +26,6 @@ use std::{
     time::Instant,
 };
 use time::Time;
-use crate::graphics::vertex_array::VertexArray;
-use crate::graphics::vertex_buffer_layout::VertexBufferLayout;
 
 fn main() -> Result<(), Box<dyn Error>> {
     let mut time = Time::default();
@@ -50,19 +50,18 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let (mut window, events) = glfw.with_connected_monitors(|glfw, m| {
         let _monitor = m.first().unwrap();
-        glfw.create_window(1280, 720, "Zeb", glfw::WindowMode::Windowed).expect("can't create window")
+        glfw.create_window(1280, 720, "Zeb", glfw::WindowMode::Windowed)
+            .expect("can't create window")
     });
 
     gl::load_with(|symbol| window.get_proc_address(symbol) as *const _);
     // Make the window's context current
-
 
     window.make_current();
 
     let version = unsafe { CStr::from_ptr(gl::GetString(gl::VERSION) as *const i8).to_str()? };
 
     println!("{:?}", version);
-
 
     let positions: [f32; 4 * 2] = [-0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, 0.5];
 
@@ -85,8 +84,6 @@ fn main() -> Result<(), Box<dyn Error>> {
     layout.push::<f32>(2);
     vertex_array.add_buffer(&vertex_buffer, &layout);
 
-
-
     let mut index_buffer = IndexBuffer::new().construct(indicies.as_ptr() as *const _, 6);
 
     let shaders = unsafe { parse_shader("src/res/shaders/Basic.shader")? };
@@ -100,7 +97,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     log_gl_error!(let location = unsafe {gl::GetUniformLocation(shader, "u_Color".as_ptr() as *const GLchar)});
     assert_ne!(location, -1);
-    
+
     let mut i: f32 = 0.0;
     let mut increament = 0.05_f32;
 
@@ -118,7 +115,6 @@ fn main() -> Result<(), Box<dyn Error>> {
 
                 vertex_array.bind();
                 index_buffer.bind();
-
 
                 i += increament;
 

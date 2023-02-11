@@ -1,8 +1,8 @@
+use crate::graphics::renderer::*;
+use gl;
 use std::mem::size_of;
 use std::ops::{Add, Mul};
 use std::process::Output;
-use crate::graphics::renderer::*;
-use gl;
 
 pub struct VertexBufferElement {
     pub v_type: GlType,
@@ -12,7 +12,6 @@ pub struct VertexBufferElement {
 
 impl VertexBufferElement {
     pub fn new(v_type: GlType, count: u32, normalized: bool) -> Self {
-
         Self {
             v_type,
             count,
@@ -20,23 +19,20 @@ impl VertexBufferElement {
         }
     }
 
-    pub fn size_of_current_type(&self) -> usize {
-
+    pub fn size_of_current_type(&self) -> u32 {
         match self.v_type {
-            GlType::gl_uint(_) => size_of::<gl::types::GLuint>() as usize,
-            GlType::gl_int(_) => size_of::<gl::types::GLint>() as usize,
-            GlType::gl_float(_) => size_of::<gl::types::GLfloat>() as usize,
-            GlType::gl_char(_) => size_of::<gl::types::GLchar>() as usize,
-            _ => todo!()
+            GlType::gl_uint(_) => size_of::<gl::types::GLuint>() as u32,
+            GlType::gl_int(_) => size_of::<gl::types::GLint>() as u32,
+            GlType::gl_float(_) => size_of::<gl::types::GLfloat>() as u32,
+            GlType::gl_char(_) => size_of::<gl::types::GLchar>() as u32,
+            _ => todo!(),
         }
     }
 }
 
 pub struct VertexBufferLayout {
-
     pub elements: Vec<VertexBufferElement>,
     pub stride: u32,
-
 }
 
 impl VertexBufferLayout {
@@ -48,28 +44,38 @@ impl VertexBufferLayout {
     }
 
     pub fn push<T>(&mut self, count: u32)
-        where T: Add<Output=T> + Mul<Output=T> + Copy
+    where
+        T: Add<Output = T> + Mul<Output = T> + Copy,
     {
         let s = size_of::<T>();
         if s == size_of::<i32>() {
-            self.elements.push(VertexBufferElement::new(GlType::gl_int(0x1404), count, false));
+            self.elements.push(VertexBufferElement::new(
+                GlType::gl_int(0x1404),
+                count,
+                false,
+            ));
         } else if s == size_of::<u32>() {
-            self.elements.push(VertexBufferElement::new(GlType::gl_uint(0x1405), count, false));
+            self.elements.push(VertexBufferElement::new(
+                GlType::gl_uint(0x1405),
+                count,
+                false,
+            ));
         } else if s == size_of::<f32>() {
-            self.elements.push(VertexBufferElement::new(GlType::gl_float(0x1406), count, false));
+            self.elements.push(VertexBufferElement::new(
+                GlType::gl_float(0x1406),
+                count,
+                false,
+            ));
         } else if s == size_of::<char>() {
-            self.elements.push(VertexBufferElement::new(GlType::gl_char(0x1404), count, true));
+            self.elements.push(VertexBufferElement::new(
+                GlType::gl_char(0x1404),
+                count,
+                true,
+            ));
         }
 
-        self.stride += size_of::<T>() as u32;
+        self.stride += size_of::<T>() as u32 * count;
     }
-
-
-
-
-
-
-
 }
 
 pub enum GlType {
@@ -89,4 +95,3 @@ impl GlType {
         }
     }
 }
-
