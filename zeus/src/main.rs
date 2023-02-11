@@ -24,14 +24,15 @@ use std::{
     time::Instant,
 };
 use time::Time;
+use crate::graphics::vertex_array::VertexArray;
+use crate::graphics::vertex_buffer_layout::VertexBufferLayout;
 
 fn main() -> Result<(), Box<dyn Error>> {
-    env_logger::init();
     let mut time = Time::default();
     let mut timer = Instant::now();
     // TODO: abstract all of GL related stuff in Screen struct;
     //let event_loop = EventLoop::new();
-    let mut glfw = glfw::init(glfw::FAIL_ON_ERRORS).unwrap();
+    let mut glfw = glfw::init(glfw::FAIL_ON_ERRORS)?;
 
     glfw.window_hint(glfw::WindowHint::ContextVersion(3, 3));
     glfw.window_hint(glfw::WindowHint::OpenGlForwardCompat(true));
@@ -49,50 +50,42 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let (mut window, events) = glfw.with_connected_monitors(|glfw, m| {
         let _monitor = m.first().unwrap();
-        glfw.create_window(1280, 720, "Zeb", glfw::WindowMode::Windowed)
-            .expect("can't get window")
+        glfw.create_window(1280, 720, "Zeb", glfw::WindowMode::Windowed).expect("can't create window")
     });
 
     gl::load_with(|symbol| window.get_proc_address(symbol) as *const _);
     // Make the window's context current
-    let mut vao = 0;
-    let mut vbo = 0;
-    let mut ebo = 0;
-    unsafe {
-        log_gl_error!(gl::GenVertexArrays(1, &mut vao));
-        log_gl_error!(gl::GenBuffers(1, &mut vbo));
-        // Bind the Vertex Array Object first, then bind and set vertex buffer(s) and attribute pointer(s).
-        log_gl_error!(gl::BindVertexArray(vao));
-    }
+
 
     window.make_current();
 
-    unsafe {
-        let version = CStr::from_ptr(gl::GetString(gl::VERSION) as *const i8)
-            .to_str()
-            .unwrap();
+    let version = unsafe { CStr::from_ptr(gl::GetString(gl::VERSION) as *const i8).to_str()? };
 
-        println!("{:?}", version);
-    }
+    println!("{:?}", version);
+
 
     let positions: [f32; 4 * 2] = [-0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, 0.5];
 
     let indicies: [u32; 3 * 2] = [0, 1, 2, 2, 3, 0];
 
     let mut shader = 0;
+
+    let mut vao = 0;
+    log_gl_error!(gl::GenVertexArrays(1, &mut vao));
+    log_gl_error!(gl::BindVertexArray(vao));
+
+    let vertex_array = VertexArray::new().construct();
+
     let mut vertex_buffer = VertexBuffer::new().construct(
         positions.as_ptr() as *const c_void,
         12 as isize * size_of::<f32>() as isize,
     );
 
-    log_gl_error!(gl::VertexAttribPointer(
-        0,
-        2,
-        gl::FLOAT,
-        gl::FALSE,
-        8,
-        0 as *const _
-    ));
+    let mut layout = VertexBufferLayout::new();
+    layout.push::<f32>(2);
+    vertex_array.add_buffer(&vertex_buffer, &layout);
+
+
 
     let mut index_buffer = IndexBuffer::new().construct(indicies.as_ptr() as *const _, 6);
 
@@ -107,8 +100,10 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     log_gl_error!(let location = unsafe {gl::GetUniformLocation(shader, "u_Color".as_ptr() as *const GLchar)});
     assert_ne!(location, -1);
+    
     let mut i: f32 = 0.0;
     let mut increament = 0.05_f32;
+
     while !window.should_close() {
         time.update();
         time.frames += 1;
@@ -121,7 +116,10 @@ fn main() -> Result<(), Box<dyn Error>> {
                 log_gl_error!(gl::Uniform4f(location, i, 0.5 / i, 0.1, 1.0));
                 log_gl_error!(gl::DrawElements(gl::TRIANGLES, 6, gl::UNSIGNED_INT, null()));
 
+                vertex_array.bind();
                 index_buffer.bind();
+
+
                 i += increament;
 
                 if i > 1.0 {
@@ -133,7 +131,6 @@ fn main() -> Result<(), Box<dyn Error>> {
                 }
 
                 log_gl_error!(gl::ClearColor(0.12, 0.12, 0.13, 1.0));
-                log_gl_error!(gl::EnableVertexAttribArray(0));
             }
         }
 
