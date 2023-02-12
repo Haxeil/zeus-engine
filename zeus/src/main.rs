@@ -96,7 +96,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             time.updates += 1;
             time.delta -= 1.0;
 
-            log_gl_error!(gl::Clear(gl::COLOR_BUFFER_BIT));
+            renderer.clear();
 
             shader.bind();
             shader.set_uniform_4f("u_Color", 1.0 / i, i, 0.0, 1.0);
@@ -111,7 +111,8 @@ fn main() -> Result<(), Box<dyn Error>> {
                 increament = 0.05;
             }
 
-            log_gl_error!(gl::ClearColor(0.12, 0.12, 0.13, 1.0));
+            renderer.clear_color(0.12, 0.12, 0.13, 1.0);
+
         }
 
         time.frames += 1;

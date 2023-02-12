@@ -59,6 +59,16 @@ impl Renderer {
         log_gl_error!(gl::DrawElements(gl::TRIANGLES, index_buffer.count, gl::UNSIGNED_INT, null()));
 
     }
+
+    pub fn clear(&self) {
+        log_gl_error!(gl::Clear(gl::COLOR_BUFFER_BIT));
+
+    }
+
+    pub fn clear_color(&self, red: f32, green: f32, blue: f32, alpha: f32) {
+        log_gl_error!(gl::ClearColor(red, green, blue, alpha));
+
+    }
 }
 
 
