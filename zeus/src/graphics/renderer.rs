@@ -1,8 +1,8 @@
-use gl;
 use crate::graphics::index_buffer::IndexBuffer;
 use crate::graphics::shader::Shader;
 use crate::graphics::vertex_array::VertexArray;
 use core::ptr::null;
+use gl;
 
 pub unsafe fn gl_clear_errors() {
     while gl::GetError() != gl::NO_ERROR {}
@@ -40,35 +40,30 @@ macro_rules! log_gl_error {
     };
 }
 
-
-pub struct Renderer {
-
-}
+pub struct Renderer {}
 
 impl Renderer {
     pub fn new() -> Self {
-        Self {
-
-        }
+        Self {}
     }
 
     pub fn draw(&self, vertex_array: &VertexArray, index_buffer: &IndexBuffer, shader: &Shader) {
         shader.bind();
         vertex_array.bind();
         index_buffer.bind();
-        log_gl_error!(gl::DrawElements(gl::TRIANGLES, index_buffer.count, gl::UNSIGNED_INT, null()));
-
+        log_gl_error!(gl::DrawElements(
+            gl::TRIANGLES,
+            index_buffer.count,
+            gl::UNSIGNED_INT,
+            null()
+        ));
     }
 
     pub fn clear(&self) {
         log_gl_error!(gl::Clear(gl::COLOR_BUFFER_BIT));
-
     }
 
     pub fn clear_color(&self, red: f32, green: f32, blue: f32, alpha: f32) {
         log_gl_error!(gl::ClearColor(red, green, blue, alpha));
-
     }
 }
-
-

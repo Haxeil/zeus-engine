@@ -112,7 +112,6 @@ fn main() -> Result<(), Box<dyn Error>> {
             }
 
             renderer.clear_color(0.12, 0.12, 0.13, 1.0);
-
         }
 
         time.frames += 1;
