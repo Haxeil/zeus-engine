@@ -5,7 +5,7 @@ use std::os::raw::c_void;
 
 pub struct IndexBuffer {
     renderer_id: u32,
-    count: i32,
+    pub count: i32,
 }
 
 impl IndexBuffer {

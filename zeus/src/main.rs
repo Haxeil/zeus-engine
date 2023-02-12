@@ -64,12 +64,12 @@ fn main() -> Result<(), Box<dyn Error>> {
     );
 
     let mut layout = VertexBufferLayout::new();
-    layout.push::<i32>(2);
+    layout.push::<char>(2);
     vertex_array.add_buffer(&vertex_buffer, &layout);
 
     let index_buffer = IndexBuffer::new().construct(indicies.as_ptr() as *const _, 6);
 
-    let shader = Shader::new("src/res/shaders/Basic.shader").construct()?;
+    let mut shader = Shader::new("src/res/shaders/Basic.shader").construct()?;
     shader.bind();
     shader.set_uniform_4f("u_Color", 0.3, 0.1, 0.0, 1.0);
 
@@ -83,6 +83,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     vertex_array.unbind();
     shader.unbind();
 
+    let renderer = Renderer::new();
+
     let mut i: f32 = 0.0;
     let mut increament = 0.05_f32;
 
@@ -93,14 +95,13 @@ fn main() -> Result<(), Box<dyn Error>> {
             //update()
             time.updates += 1;
             time.delta -= 1.0;
+
             log_gl_error!(gl::Clear(gl::COLOR_BUFFER_BIT));
 
             shader.bind();
-            vertex_array.bind();
-            index_buffer.bind();
-
             shader.set_uniform_4f("u_Color", 1.0 / i, i, 0.0, 1.0);
-            log_gl_error!(gl::DrawElements(gl::TRIANGLES, 6, gl::UNSIGNED_INT, null()));
+
+            renderer.draw(&vertex_array, &index_buffer, &shader);
 
             i += increament * time.delta as f32;
 

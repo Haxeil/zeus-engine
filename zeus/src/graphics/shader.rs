@@ -1,5 +1,6 @@
 use gl;
 use std::alloc::{alloc, Layout};
+use std::collections::HashMap;
 use std::error::Error;
 use std::ffi::CStr;
 use std::fs::File;
@@ -51,7 +52,7 @@ impl Shader {
         log_gl_error!(gl::UseProgram(0))
     }
 
-    pub fn set_uniform_4f(&self, name: &str, v0: f32, v1: f32, v2: f32, v3: f32) {
+    pub fn set_uniform_4f(&mut self, name: &str, v0: f32, v1: f32, v2: f32, v3: f32) {
         log_gl_error!(gl::Uniform4f(
             self.get_uniform_location(name),
             v0,
@@ -61,7 +62,7 @@ impl Shader {
         ));
     }
 
-    fn get_uniform_location(&self, name: &str) -> gl::types::GLint {
+    fn get_uniform_location(&mut self, name: &str) -> gl::types::GLint {
         log_gl_error!(let location = unsafe {gl::GetUniformLocation(self.renderer_id, name.as_ptr() as *const gl::types::GLchar)});
         if location == -1 {
             println!("warning: Uniform {} does not exist", name,);
@@ -75,15 +76,16 @@ impl Shader {
         fragment_shader: String,
     ) -> Result<u32, Box<dyn Error>> {
         let program = unsafe { gl::CreateProgram() };
-        let vs = self.compile_shader(gl::VERTEX_SHADER, vertex_shader)?;
-        let fs = self.compile_shader(gl::FRAGMENT_SHADER, fragment_shader)?;
+        let vertex_shader = self.compile_shader(gl::VERTEX_SHADER, vertex_shader)?;
+        let fragment_shader = self.compile_shader(gl::FRAGMENT_SHADER, fragment_shader)?;
         // Attach Shaders;
-        log_gl_error!(gl::AttachShader(program, vs));
-        log_gl_error!(gl::AttachShader(program, fs));
+        log_gl_error!(gl::AttachShader(program, vertex_shader));
+        log_gl_error!(gl::AttachShader(program, fragment_shader));
         log_gl_error!(gl::LinkProgram(program));
         log_gl_error!(gl::ValidateProgram(program));
         // Drop Shaders;
-        log_gl_error!(gl::DeleteShader(vs));
+        log_gl_error!(gl::DeleteShader(vertex_shader));
+        log_gl_error!(gl::DeleteShader(fragment_shader));
 
         Ok(program)
     }

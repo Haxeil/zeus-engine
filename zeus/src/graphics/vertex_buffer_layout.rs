@@ -23,7 +23,6 @@ impl VertexBufferElement {
             GlType::GlInt(_) => size_of::<gl::types::GLint>() as u32,
             GlType::GlFloat(_) => size_of::<gl::types::GLfloat>() as u32,
             GlType::GlChar(_) => size_of::<gl::types::GLchar>() as u32,
-            _ => todo!(),
         }
     }
 }
@@ -43,7 +42,7 @@ impl VertexBufferLayout {
 
     pub fn push<T>(&mut self, count: u32)
     where
-        T: Add<Output = T> + Mul<Output = T> + Copy,
+        T: Copy,
     {
         let s = size_of::<T>();
         if s == size_of::<i32>() {
