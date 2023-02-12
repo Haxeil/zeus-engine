@@ -1,2 +1,2 @@
 # zeus-engine
-Just a play ground to learn about graphics programming, game engine programming maybe !
+Just a play ground to learn about graphics programming and game engine programming.
