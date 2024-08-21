@@ -1,29 +1,34 @@
-use std::ops::{Add, Div, Mul, Sub};
+use std::{fmt::Display, ops::{Add, AddAssign, Div, Mul, MulAssign, Sub, SubAssign}};
 
 use super::{vec3::Vec3, vec4::Vec4};
 
 #[derive(Debug, PartialEq, PartialOrd, Clone, Copy)]
 
 pub struct Mat4 {
-    elements: [f32; 4 * 4],
+    pub elements: [f32; 4 * 4],
 }
 
 impl Mat4 {
+
+    #[inline]
     pub fn new(diagonal: f32) -> Self {
-        let mut elements = [0.0; 4 * 4];
+        let mut result = Mat4::zero();
 
-        elements[0 + 0 * 4] = diagonal;
-        elements[1 + 1 * 4] = diagonal;
-        elements[2 + 2 * 4] = diagonal;
-        elements[3 + 3 * 4] = diagonal;
+        result.elements[0 + 0 * 4] = diagonal;
+        result.elements[1 + 1 * 4] = diagonal;
+        result.elements[2 + 2 * 4] = diagonal;
+        result.elements[3 + 3 * 4] = diagonal;
 
-        Self { elements }
+
+        result
     }
 
+    #[inline]
     pub fn new_identity() -> Self {
         Self::new(1.0)
     }
 
+    #[inline]
     pub fn zero() -> Self {
         Self {
             elements: [0.0; 4 * 4],
@@ -32,6 +37,7 @@ impl Mat4 {
 }
 
 impl Mat4 {
+    #[inline]
     pub fn orthographic(left: f32, right: f32, top: f32, buttom: f32, near: f32, far: f32) -> Mat4 {
         let mut result = Mat4::new(1.0);
 
@@ -46,6 +52,7 @@ impl Mat4 {
         result
     }
 
+    #[inline]
     pub fn prespective(fov: f32, aspect_ratio: f32, near: f32, far: f32) -> Self {
         let mut result = Mat4::new(1.0);
 
@@ -67,6 +74,7 @@ impl Mat4 {
         result
     }
 
+    #[inline]
     pub fn translation(translation: &Vec3) -> Self {
         let mut result = Mat4::new(1.0);
 
@@ -78,10 +86,38 @@ impl Mat4 {
 
     }
 
+    
+
+    #[inline]
     pub fn rotation(angle: f32, axis: &Vec3) -> Self {
-        Self { elements: todo!() }
+        let mut result = Mat4::new(1.0);
+
+        let r = angle.to_radians();
+        let c = r.cos();
+        let s = c.sin();
+        let omc = 1.0 - c;
+
+        let x = axis.x;
+        let y = axis.y;
+        let z = axis.z;
+
+        result.elements[0 + 0 * 4] = x * omc + c;
+        result.elements[1 + 0 * 4] = y * x * omc + z * s;
+        result.elements[2 + 0 * 4] = x * z * omc - y * s;
+
+        result.elements[0 + 1 * 4] = x * y * omc - z * s;
+        result.elements[1 + 1 * 4] = y * omc + c;
+        result.elements[2 + 1 * 4] = y * z * omc + x * s;
+
+        result.elements[0 + 2 * 4] = x * z * omc + y * s;
+        result.elements[1 + 2 * 4] = y * z * omc - x * s;
+        result.elements[2 + 2 * 4] = z * omc + c;
+
+        result
+
     }
 
+    #[inline]
     pub fn scale(scale: &Vec3) -> Self {
         let mut result = Mat4::new(1.0);
 
@@ -107,6 +143,12 @@ impl Add for Mat4 {
     }
 }
 
+impl AddAssign for Mat4 {
+    fn add_assign(&mut self, rhs: Self) {
+        *self = *self + rhs
+    }
+}
+
 impl Sub for Mat4 {
     type Output = Mat4;
 
@@ -120,6 +162,13 @@ impl Sub for Mat4 {
         Self { elements }
     }
 }
+
+impl SubAssign for Mat4 {
+    fn sub_assign(&mut self, rhs: Self) {
+        *self = *self - rhs
+    }
+}
+
 
 impl Mul for Mat4 {
     type Output = Mat4;
@@ -141,6 +190,12 @@ impl Mul for Mat4 {
     }
 }
 
+impl MulAssign for Mat4 {
+    fn mul_assign(&mut self, rhs: Self) {
+        *self = *self * rhs
+    }
+}
+
 impl Div for Mat4 {
     type Output = Mat4;
 
@@ -148,3 +203,4 @@ impl Div for Mat4 {
         panic!("not defined");
     }
 }
+
