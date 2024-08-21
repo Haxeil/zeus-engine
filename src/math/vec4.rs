@@ -1,26 +1,19 @@
-use std::{fmt::Display, ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign}};
-
+use std::{
+    fmt::Display,
+    ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign},
+};
 
 #[derive(Debug, PartialEq, PartialOrd, Clone, Copy)]
 pub struct Vec4 {
-    x: f32,
-    y: f32,
-    z: f32,
-    w: f32,
-    
+    pub x: f32,
+    pub y: f32,
+    pub z: f32,
+    pub w: f32,
 }
 
-
-
 impl Vec4 {
-
     pub fn new(x: f32, y: f32, z: f32, w: f32) -> Self {
-        Vec4 {
-            x,
-            y,
-            z,
-            w,
-        }
+        Vec4 { x, y, z, w }
     }
 
     pub fn zero() -> Self {
@@ -28,10 +21,45 @@ impl Vec4 {
             x: 0.0,
             y: 0.0,
             z: 0.0,
-            w: 0.0
+            w: 0.0,
         }
     }
 
+    pub fn up() -> Self {
+        Self {
+            x: 0.0,
+            y: 1.0,
+            z: 0.0,
+            w: 0.0,
+        }
+    }
+
+    pub fn down() -> Self {
+        Self {
+            x: 0.0,
+            y: -1.0,
+            z: 0.0,
+            w: 0.0,
+        }
+    }
+
+    pub fn right() -> Self {
+        Self {
+            x: 1.0,
+            y: 0.0,
+            z: 0.0,
+            w: 0.0,
+        }
+    }
+
+    pub fn left() -> Self {
+        Self {
+            x: -1.0,
+            y: 0.0,
+            z: 0.0,
+            w: 0.0,
+        }
+    }
 }
 
 impl Add for Vec4 {
@@ -87,7 +115,6 @@ impl Div for Vec4 {
 }
 
 impl AddAssign for Vec4 {
-
     fn add_assign(&mut self, rhs: Self) {
         *self = Self {
             x: self.x + rhs.x,
@@ -95,7 +122,6 @@ impl AddAssign for Vec4 {
             z: self.z + rhs.z,
             w: self.w + rhs.w,
         };
-        
     }
 }
 
@@ -107,7 +133,6 @@ impl SubAssign for Vec4 {
             z: self.z - rhs.z,
             w: self.w - rhs.w,
         };
-        
     }
 }
 
@@ -119,24 +144,26 @@ impl MulAssign for Vec4 {
             z: self.z * rhs.z,
             w: self.w * rhs.w,
         };
-            }
+    }
 }
 
 impl DivAssign for Vec4 {
     fn div_assign(&mut self, rhs: Self) {
-
         *self = Self {
             x: self.x / rhs.x,
             y: self.y / rhs.y,
             z: self.z / rhs.z,
             w: self.w / rhs.w,
         };
-        
     }
 }
 
 impl Display for Vec4 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "(x: {}, y: {}, z: {}, w: {})", self.x, self.y, self.z, self.w)
+        write!(
+            f,
+            "(x: {}, y: {}, z: {}, w: {})",
+            self.x, self.y, self.z, self.w
+        )
     }
 }

@@ -1,4 +1,4 @@
-use std::cell::{Cell};
+use std::cell::Cell;
 
 use glfw::{Context, Glfw, GlfwReceiver, Key, MouseButton, PWindow, WindowEvent};
 
@@ -7,7 +7,6 @@ const MAX_BUTTONS: usize = 32;
 
 // Global static mutable reference to Window
 pub static mut GLOBAL_WINDOW: Option<Cell<Window>> = None;
-
 
 pub fn get_global_window() -> &'static mut Window {
     unsafe { GLOBAL_WINDOW.as_mut().expect("Window not set").get_mut() }
@@ -43,7 +42,6 @@ impl Default for Window {
 }
 
 impl Window {
-    
     pub fn from(name: String, width: i32, height: i32) -> &'static mut Self {
         let window = Window {
             name,
@@ -57,7 +55,6 @@ impl Window {
         }
 
         get_global_window()
-
     }
 }
 
@@ -123,7 +120,7 @@ impl Window {
                 .get_proc_address(ptr) as *const _
         });
         unsafe {
-            // make this into a function 
+            // make this into a function
             //
             let version =
                 std::str::from_utf8(std::slice::from_raw_parts(gl::GetString(gl::VENDOR), 7))

@@ -3,8 +3,8 @@ extern crate glfw;
 mod graphics;
 mod math;
 
-
 use graphics::window::Window;
+use mat4::Mat4;
 use math::*;
 
 fn main() {

@@ -1,31 +1,38 @@
-use std::{fmt::Display, ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign}};
-
+use std::{
+    fmt::Display,
+    ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign},
+};
 
 #[derive(Debug, PartialEq, PartialOrd, Clone, Copy)]
 pub struct Vec2 {
-    x: f32,
-    y: f32,
-    
+    pub x: f32,
+    pub y: f32,
 }
 
-
-
 impl Vec2 {
-
     pub fn new(x: f32, y: f32) -> Self {
-        Vec2 {
-            x,
-            y,
-        }
+        Vec2 { x, y }
     }
 
     pub fn zero() -> Self {
-        Vec2 {
-            x: 0.0,
-            y: 0.0,
-        }
+        Vec2 { x: 0.0, y: 0.0 }
     }
 
+    pub fn up() -> Self {
+        Vec2 { x: 0.0, y: 1.0 }
+    }
+
+    pub fn down() -> Self {
+        Self { x: 0.0, y: -1.0 }
+    }
+
+    pub fn right() -> Self {
+        Self { x: 1.0, y: 0.0 }
+    }
+
+    pub fn left() -> Self {
+        Self { x: -1.0, y: 0.0 }
+    }
 }
 
 impl Add for Vec2 {
@@ -45,7 +52,7 @@ impl Sub for Vec2 {
     fn sub(self, rhs: Self) -> Self::Output {
         Self {
             x: self.x - rhs.x,
-            y: self.y - rhs.y
+            y: self.y - rhs.y,
         }
     }
 }
@@ -56,7 +63,7 @@ impl Mul for Vec2 {
     fn mul(self, rhs: Self) -> Self::Output {
         Self {
             x: self.x * rhs.x,
-            y: self.y * rhs.y
+            y: self.y * rhs.y,
         }
     }
 }
@@ -67,19 +74,17 @@ impl Div for Vec2 {
     fn div(self, rhs: Self) -> Self::Output {
         Self {
             x: self.x / rhs.x,
-            y: self.y / rhs.y
+            y: self.y / rhs.y,
         }
     }
 }
 
 impl AddAssign for Vec2 {
-
     fn add_assign(&mut self, rhs: Self) {
         *self = Self {
             x: self.x + rhs.x,
             y: self.y + rhs.y,
         };
-        
     }
 }
 
@@ -89,7 +94,6 @@ impl SubAssign for Vec2 {
             x: self.x - rhs.x,
             y: self.y - rhs.y,
         };
-        
     }
 }
 
@@ -99,17 +103,15 @@ impl MulAssign for Vec2 {
             x: self.x * rhs.x,
             y: self.y * rhs.y,
         };
-            }
+    }
 }
 
 impl DivAssign for Vec2 {
     fn div_assign(&mut self, rhs: Self) {
-
         *self = Self {
             x: self.x / rhs.x,
             y: self.y / rhs.y,
         };
-        
     }
 }
 
