@@ -1,4 +1,7 @@
-use std::{fmt::Display, ops::{Add, AddAssign, Div, Index, IndexMut, Mul, MulAssign, Sub, SubAssign}};
+use std::{
+    fmt::Display,
+    ops::{Add, AddAssign, Div, Index, IndexMut, Mul, MulAssign, Sub, SubAssign},
+};
 
 use super::{vec3::Vec3, vec4::Vec4};
 
@@ -6,13 +9,9 @@ use super::{vec3::Vec3, vec4::Vec4};
 
 pub struct Mat4 {
     pub elements: [f32; 4 * 4],
-    
 }
 
-
-
 impl Mat4 {
-
     #[inline]
     pub fn new(diagonal: f32) -> Self {
         let mut result = Mat4::zero();
@@ -21,7 +20,6 @@ impl Mat4 {
         result.elements[1 + 1 * 4] = diagonal;
         result.elements[2 + 2 * 4] = diagonal;
         result.elements[3 + 3 * 4] = diagonal;
-
 
         result
     }
@@ -34,8 +32,7 @@ impl Mat4 {
     #[inline]
     pub fn zero() -> Self {
         Self {
-            
-           elements: [0.0; 4*4],
+            elements: [0.0; 4 * 4],
         }
     }
 
@@ -43,20 +40,15 @@ impl Mat4 {
     #[inline]
     pub fn column(&self, index: usize) -> &Vec4 {
         assert!(index < 4, "Column index out of bounds");
-        unsafe {
-            &*(self.elements.as_ptr().add(index * 4) as *const Vec4)
-        }
+        unsafe { &*(self.elements.as_ptr().add(index * 4) as *const Vec4) }
     }
 
     /// Access a mutable column as a reference to Vec4 (without copying data)
     #[inline]
     pub fn column_mut(&mut self, index: usize) -> &mut Vec4 {
         assert!(index < 4, "Column index out of bounds");
-        unsafe {
-            &mut *(self.elements.as_mut_ptr().add(index * 4) as *mut Vec4)
-        }
+        unsafe { &mut *(self.elements.as_mut_ptr().add(index * 4) as *mut Vec4) }
     }
-
 }
 
 impl Mat4 {
@@ -68,7 +60,7 @@ impl Mat4 {
         result.elements[1 + 1 * 4] = 2.0 / (top - buttom);
         result.elements[2 + 2 * 4] = 2.0 / (near - far);
 
-        result.elements[0 + 3 * 4] = (left + right) /  (left - right);
+        result.elements[0 + 3 * 4] = (left + right) / (left - right);
         result.elements[1 + 3 * 4] = (buttom + top) / (buttom - top);
         result.elements[2 + 3 * 4] = (far + near) / (far - near);
 
@@ -93,7 +85,6 @@ impl Mat4 {
 
         result.elements[2 + 3 * 4] = c;
 
-
         result
     }
 
@@ -106,10 +97,7 @@ impl Mat4 {
         result.elements[2 + 2 * 4] = translation.z;
 
         result
-
     }
-
-    
 
     #[inline]
     pub fn rotation(angle: f32, axis: &Vec3) -> Self {
@@ -137,7 +125,6 @@ impl Mat4 {
         result.elements[2 + 2 * 4] = z * omc + c;
 
         result
-
     }
 
     #[inline]
@@ -207,7 +194,6 @@ impl SubAssign for Mat4 {
     }
 }
 
-
 impl Mul for Mat4 {
     type Output = Mat4;
 
@@ -241,4 +227,3 @@ impl Div for Mat4 {
         panic!("not defined");
     }
 }
-
