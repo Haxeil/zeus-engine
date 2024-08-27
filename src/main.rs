@@ -25,12 +25,14 @@ fn main() {
     let mut position = Mat4::translation(&Vec3::new(2.0, 3.0, 4.0));
     position *= Mat4::new_identity();
 
+    position.column_mut(3).x = 2.0;
+
     while !window.closed() {
         window.clear();
 
         if window.is_key_pressed(glfw::Key::A) {
-            println!("position: {:?}", position.elements);
-            println!("position: {:?}", c);
+            println!("position elm: {:p}", &position.elements[12]);
+            println!("position: {:p}", &position[3].x);
         }
 
         window.update(&mut glfw);

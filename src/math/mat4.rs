@@ -1,4 +1,4 @@
-use std::{fmt::Display, ops::{Add, AddAssign, Div, Mul, MulAssign, Sub, SubAssign}};
+use std::{fmt::Display, ops::{Add, AddAssign, Div, Index, IndexMut, Mul, MulAssign, Sub, SubAssign}};
 
 use super::{vec3::Vec3, vec4::Vec4};
 
@@ -6,7 +6,10 @@ use super::{vec3::Vec3, vec4::Vec4};
 
 pub struct Mat4 {
     pub elements: [f32; 4 * 4],
+    
 }
+
+
 
 impl Mat4 {
 
@@ -31,9 +34,29 @@ impl Mat4 {
     #[inline]
     pub fn zero() -> Self {
         Self {
-            elements: [0.0; 4 * 4],
+            
+           elements: [0.0; 4*4],
         }
     }
+
+    /// Access a column as a reference to Vec4 (without copying data)
+    #[inline]
+    pub fn column(&self, index: usize) -> &Vec4 {
+        assert!(index < 4, "Column index out of bounds");
+        unsafe {
+            &*(self.elements.as_ptr().add(index * 4) as *const Vec4)
+        }
+    }
+
+    /// Access a mutable column as a reference to Vec4 (without copying data)
+    #[inline]
+    pub fn column_mut(&mut self, index: usize) -> &mut Vec4 {
+        assert!(index < 4, "Column index out of bounds");
+        unsafe {
+            &mut *(self.elements.as_mut_ptr().add(index * 4) as *mut Vec4)
+        }
+    }
+
 }
 
 impl Mat4 {
@@ -126,6 +149,21 @@ impl Mat4 {
         result.elements[2 + 2 * 4] = scale.z;
 
         result
+    }
+}
+
+// Implement indexing to access and modify columns using array syntax
+impl Index<usize> for Mat4 {
+    type Output = Vec4;
+
+    fn index(&self, index: usize) -> &Self::Output {
+        self.column(index)
+    }
+}
+
+impl IndexMut<usize> for Mat4 {
+    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+        self.column_mut(index)
     }
 }
 

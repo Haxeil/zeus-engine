@@ -7,7 +7,7 @@ const MAX_BUTTONS: usize = 32;
 
 // Global static mutable reference to Window
 pub static mut GLOBAL_WINDOW: Option<Cell<Window>> = None;
-
+// a singleton kinda;
 pub fn get_global_window() -> &'static mut Window {
     unsafe { GLOBAL_WINDOW.as_mut().expect("Window not set").get_mut() }
 }
