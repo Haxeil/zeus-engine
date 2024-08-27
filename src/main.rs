@@ -15,7 +15,7 @@ fn main() {
 
     let mut glfw = window.init();
 
-    let shader = Shader::from("src/shaders/vertex.shader", "src/shaders/fragment.shader");
+    let shader = Shader::from("src/shaders/vertex.glsl", "src/shaders/fragment.glsl");
 
     window.clear_color(0.2, 1.0, 1.0, 1.0);
 
