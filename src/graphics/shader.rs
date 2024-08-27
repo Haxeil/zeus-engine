@@ -1,6 +1,6 @@
-use std::{ffi::CStr, ptr};
+use std::{ffi::{CStr, CString}, ptr};
 
-use crate::utils;
+use crate::{mat4::{self, Mat4}, utils, vec2::Vec2, vec3::Vec3, vec4::Vec4};
 use gl::{types::*, FALSE};
 use utils::file_utils::read_file;
 
@@ -17,6 +17,60 @@ impl Shader {
 }
 
 impl Shader {
+    pub fn set_uniform_1f(&self, name: &str, value: f32) {
+        unsafe {
+            gl::Uniform1f(self.get_uniform_location(name), value);
+        }
+
+    }
+
+    pub fn set_uniform_1i(&self, name: &str, value: i32) {
+        unsafe {
+
+            gl::Uniform1i(self.get_uniform_location(name), value);
+        }
+    }
+
+    pub fn set_uniform_2f(&self, name: &str, vector: Vec2) {
+        unsafe {
+
+            gl::Uniform2f(self.get_uniform_location(name), vector.x, vector.y);
+        }
+
+    }
+
+    pub fn set_uniform_3f(&self, name: &str, vector: Vec3) {
+        unsafe {
+            gl::Uniform3f(self.get_uniform_location(name), vector.x, vector.y, vector.z);
+        }
+    }
+
+    pub fn set_uniform_4f(&self, name: &str, vector: Vec4) {
+        unsafe {
+
+            gl::Uniform4f(self.get_uniform_location(name), vector.x, vector.y, vector.z, vector.w);
+        }
+    }
+    
+    pub fn set_uniform_mat4(&self, name: &str, matrix: Mat4) {
+
+        unsafe {
+            
+
+            gl::UniformMatrix4fv(self.get_uniform_location(name), 1, gl::FALSE, matrix.elements.as_ptr());
+        }
+
+
+    }
+
+    fn get_uniform_location(&self, name: &str) -> i32 {
+        let name = CString::new(name).expect("invalid string");
+        unsafe {
+            gl::GetUniformLocation(self.shader_id, name.as_ptr())
+        }
+    
+    }
+
     #[inline]
     pub fn enable(&mut self) {
         unsafe {
@@ -31,6 +85,8 @@ impl Shader {
         }
     }
 }
+
+
 
 fn load(vertex_path: &str, fragment_path: &str) -> GLuint {
     unsafe {

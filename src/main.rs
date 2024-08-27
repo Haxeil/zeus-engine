@@ -14,7 +14,7 @@ use vec3::Vec3;
 use vec4::Vec4;
 
 fn main() {
-    let window = Window::from("zeus-rust".into(), 800, 600);
+    let window = Window::from("zeus-rust".into(), 960, 540);
 
     let mut glfw = window.init();
 
@@ -24,10 +24,14 @@ fn main() {
 
   
 
-    let vertices: [GLfloat; 9] = [
-        0.0, 0.0, 0.0,
-        15.0, 0.0, 0.0,
-        0.0, 8.0, 0.0,
+    let vertices: [GLfloat; 18] = [
+        4.0, 3.0, 0.0,
+        12.0, 3.0, 0.0,
+        4.0, 6.0, 0.0,
+        4.0, 6.0, 0.0,
+        12.0, 6.0, 0.0,
+        12.0, 3.0, 0.0,
+
     ];
 
     let mut vbo: GLuint = 0;
@@ -46,14 +50,8 @@ fn main() {
     let mut shader = Shader::from("src/shaders/vertex.glsl", "src/shaders/fragment.glsl");
     shader.enable();
 
-    unsafe  {
-        let name = CString::new("pr_matrix").expect("can't");
-        let location = gl::GetUniformLocation(shader.shader_id, name.as_ptr());
-        println!("locationm : {location}");
-        gl::UniformMatrix4fv(location, 1, gl::FALSE, ortho.elements.as_ptr());
-        
-
-    }
+    shader.set_uniform_mat4("pr_matrix", ortho);
+  
 
     while !window.closed() {
         window.clear();
