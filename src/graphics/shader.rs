@@ -5,13 +5,13 @@ use gl::{types::*, FALSE};
 use utils::file_utils::read_file;
 
 pub struct Shader {
-    pub shader: GLuint,
+    pub shader_id: GLuint,
 }
 
 impl Shader {
     pub fn from(vertex_path: &str, fragment_path: &str) -> Shader {
         Shader {
-            shader: load(vertex_path, fragment_path),
+            shader_id: load(vertex_path, fragment_path),
         }
     }
 }
@@ -20,7 +20,7 @@ impl Shader {
     #[inline]
     pub fn enable(&mut self) {
         unsafe {
-            gl::UseProgram(self.shader);
+            gl::UseProgram(self.shader_id);
         }
     }
 
@@ -104,7 +104,7 @@ fn load(vertex_path: &str, fragment_path: &str) -> GLuint {
 impl Drop for Shader {
     fn drop(&mut self) {
         unsafe {
-            gl::DeleteProgram(self.shader);
+            gl::DeleteProgram(self.shader_id);
         }
     }
 }

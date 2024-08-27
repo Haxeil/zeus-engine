@@ -3,7 +3,7 @@ extern crate glfw;
 mod graphics;
 mod math;
 mod utils;
-use std::{mem, os::raw::c_void};
+use std::{ffi::CString, mem, os::raw::c_void};
 
 use gl::types::*;
 
@@ -24,13 +24,10 @@ fn main() {
 
   
 
-    let vertices: [GLfloat; 18] = [
-        -0.5, -0.5, 0.0,
-        -0.5,  0.5, 0.0,
-         0.5,  0.5, 0.0,
-         0.5,  0.5, 0.0,
-         0.5, -0.5, 0.0,
-        -0.5, -0.5, 0.0,
+    let vertices: [GLfloat; 9] = [
+        0.0, 0.0, 0.0,
+        15.0, 0.0, 0.0,
+        0.0, 8.0, 0.0,
     ];
 
     let mut vbo: GLuint = 0;
@@ -44,8 +41,19 @@ fn main() {
         gl::EnableVertexAttribArray(0);
     }
 
+    let ortho = Mat4::orthographic(0.0, 16.0, 0.0, 9.0, -1.0, 1.0);
+
     let mut shader = Shader::from("src/shaders/vertex.glsl", "src/shaders/fragment.glsl");
     shader.enable();
+
+    unsafe  {
+        let name = CString::new("pr_matrix").expect("can't");
+        let location = gl::GetUniformLocation(shader.shader_id, name.as_ptr());
+        println!("locationm : {location}");
+        gl::UniformMatrix4fv(location, 1, gl::FALSE, ortho.elements.as_ptr());
+        
+
+    }
 
     while !window.closed() {
         window.clear();
