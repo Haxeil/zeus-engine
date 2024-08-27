@@ -100,3 +100,11 @@ fn load(vertex_path: &str, fragment_path: &str) -> GLuint {
         return program;
     }
 }
+
+impl Drop for Shader {
+    fn drop(&mut self) {
+        unsafe {
+            gl::DeleteProgram(self.shader);
+        }
+    }
+}
