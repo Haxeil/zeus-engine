@@ -18,14 +18,14 @@ impl Shader {
 
 impl Shader {
     #[inline]
-    fn enable(&mut self) {
+    pub fn enable(&mut self) {
         unsafe {
             gl::UseProgram(self.shader);
         }
     }
 
     #[inline]
-    fn disable(&mut self) {
+    pub fn disable(&mut self) {
         unsafe {
             gl::UseProgram(0);
         }

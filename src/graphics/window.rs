@@ -123,7 +123,7 @@ impl Window {
             // make this into a function
             //
             let version =
-                std::str::from_utf8(std::slice::from_raw_parts(gl::GetString(gl::VENDOR), 7))
+                std::str::from_utf8(std::slice::from_raw_parts(gl::GetString(gl::VERSION), 30))
                     .expect("can't get string from gl");
             println!("GL Version: {}", version);
         }
