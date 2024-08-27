@@ -51,7 +51,8 @@ fn main() {
     shader.enable();
 
     shader.set_uniform_mat4("pr_matrix", ortho);
-  
+    shader.set_uniform_mat4("ml_matrix", Mat4::rotation(45.0, &Vec3::new(0.0, 0.0, 1.0)));
+    shader.set_uniform_4f("colour", Vec4::new(0.2, 0.1, 0.3, 0.1));
 
     while !window.closed() {
         window.clear();
