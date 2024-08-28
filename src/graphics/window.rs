@@ -119,13 +119,18 @@ impl Window {
                 .expect("could not load GL")
                 .get_proc_address(ptr) as *const _
         });
+
         unsafe {
             // make this into a function
             //
             let version =
                 std::str::from_utf8(std::slice::from_raw_parts(gl::GetString(gl::VERSION), 30))
                     .expect("can't get string from gl");
-            println!("GL Version: {}", version);
+            let vendor =
+                std::str::from_utf8(std::slice::from_raw_parts(gl::GetString(gl::RENDERER), 24))
+                    .expect("can't get string from gl");         
+
+            println!("GL Version: {version}\nvendor: {vendor}");
         }
 
         return glfw;
