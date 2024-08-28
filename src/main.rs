@@ -5,11 +5,11 @@ mod math;
 mod utils;
 
 
-use std::{ffi::CString, mem, os::raw::c_void};
+use std::{mem, os::raw::c_void};
 
 use gl::types::*;
 
-use graphics::{buffers::buffer::Buffer, shader::Shader, window::Window};
+use graphics::{shader::Shader, window::Window};
 use mat4::Mat4;
 use math::*;
 use vec2::Vec2;
@@ -29,6 +29,7 @@ fn main() {
         0.0, 0.0, 0.0, 
         8.0, 0.0, 0.0, 
         0.0, 3.0, 0.0, 
+        
         0.0, 3.0, 0.0, 
         8.0, 3.0, 0.0, 
         8.0, 0.0, 0.0,
@@ -66,6 +67,8 @@ fn main() {
 
         unsafe {
             gl::DrawArrays(gl::TRIANGLES, 0, 6);
+            let (x, y) = window.mouse_x_y;
+            shader.set_uniform_2f("light_pos", Vec2::new(x as f32 * 16.0 / 960.0,  y as f32 * 9.0 / 540.0));
         }
 
         window.update(&mut glfw);
