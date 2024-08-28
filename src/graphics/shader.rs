@@ -1,6 +1,15 @@
-use std::{ffi::{CStr, CString}, ptr};
+use std::{
+    ffi::{CStr, CString},
+    ptr,
+};
 
-use crate::{mat4::{self, Mat4}, utils, vec2::Vec2, vec3::Vec3, vec4::Vec4};
+use crate::{
+    mat4::{self, Mat4},
+    utils,
+    vec2::Vec2,
+    vec3::Vec3,
+    vec4::Vec4,
+};
 use gl::{types::*, FALSE};
 use utils::file_utils::read_file;
 
@@ -21,54 +30,57 @@ impl Shader {
         unsafe {
             gl::Uniform1f(self.get_uniform_location(name), value);
         }
-
     }
 
     pub fn set_uniform_1i(&self, name: &str, value: i32) {
         unsafe {
-
             gl::Uniform1i(self.get_uniform_location(name), value);
         }
     }
 
     pub fn set_uniform_2f(&self, name: &str, vector: Vec2) {
         unsafe {
-
             gl::Uniform2f(self.get_uniform_location(name), vector.x, vector.y);
         }
-
     }
 
     pub fn set_uniform_3f(&self, name: &str, vector: Vec3) {
         unsafe {
-            gl::Uniform3f(self.get_uniform_location(name), vector.x, vector.y, vector.z);
+            gl::Uniform3f(
+                self.get_uniform_location(name),
+                vector.x,
+                vector.y,
+                vector.z,
+            );
         }
     }
 
     pub fn set_uniform_4f(&self, name: &str, vector: Vec4) {
         unsafe {
-
-            gl::Uniform4f(self.get_uniform_location(name), vector.x, vector.y, vector.z, vector.w);
+            gl::Uniform4f(
+                self.get_uniform_location(name),
+                vector.x,
+                vector.y,
+                vector.z,
+                vector.w,
+            );
         }
     }
-    
+
     pub fn set_uniform_mat4(&self, name: &str, matrix: Mat4) {
-
         unsafe {
-            
-
-            gl::UniformMatrix4fv(self.get_uniform_location(name), 1, gl::FALSE, matrix.elements.as_ptr());
+            gl::UniformMatrix4fv(
+                self.get_uniform_location(name),
+                1,
+                gl::FALSE,
+                matrix.elements.as_ptr(),
+            );
         }
-
-
     }
 
     fn get_uniform_location(&self, name: &str) -> i32 {
         let name = CString::new(name).expect("invalid string");
-        unsafe {
-            gl::GetUniformLocation(self.shader_id, name.as_ptr())
-        }
-    
+        unsafe { gl::GetUniformLocation(self.shader_id, name.as_ptr()) }
     }
 
     #[inline]
@@ -85,8 +97,6 @@ impl Shader {
         }
     }
 }
-
-
 
 fn load(vertex_path: &str, fragment_path: &str) -> GLuint {
     unsafe {
@@ -106,7 +116,12 @@ fn load(vertex_path: &str, fragment_path: &str) -> GLuint {
             gl::GetShaderiv(vertex, gl::INFO_LOG_LENGTH, &mut length);
 
             let mut buffer = vec![0u8; length as usize];
-            gl::GetShaderInfoLog(vertex, length, ptr::null_mut(), buffer.as_mut_ptr() as *mut i8);
+            gl::GetShaderInfoLog(
+                vertex,
+                length,
+                ptr::null_mut(),
+                buffer.as_mut_ptr() as *mut i8,
+            );
 
             let msg = std::str::from_utf8(&buffer)
                 .unwrap_or("Failed to read shader info log")
@@ -115,7 +130,6 @@ fn load(vertex_path: &str, fragment_path: &str) -> GLuint {
             println!("Vertex shader compilation error: {}", msg);
             gl::DeleteShader(vertex);
             return 0;
-
         }
 
         // FRAGMENT SHADER:
@@ -131,7 +145,12 @@ fn load(vertex_path: &str, fragment_path: &str) -> GLuint {
             gl::GetShaderiv(fragment, gl::INFO_LOG_LENGTH, &mut length);
 
             let mut buffer = vec![0u8; length as usize];
-            gl::GetShaderInfoLog(fragment, length, ptr::null_mut(), buffer.as_mut_ptr() as *mut i8);
+            gl::GetShaderInfoLog(
+                fragment,
+                length,
+                ptr::null_mut(),
+                buffer.as_mut_ptr() as *mut i8,
+            );
 
             let msg = std::str::from_utf8(&buffer)
                 .unwrap_or("Failed to read shader info log")
@@ -141,7 +160,6 @@ fn load(vertex_path: &str, fragment_path: &str) -> GLuint {
             gl::DeleteShader(fragment);
 
             return 0;
-
         }
 
         gl::AttachShader(program, vertex);
