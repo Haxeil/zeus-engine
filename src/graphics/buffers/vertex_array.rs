@@ -2,14 +2,14 @@ use gl::types::*;
 
 use super::{buffer::Buffer, index_buffer};
 
-struct VertexArray<'a> {
+pub struct VertexArray<'a> {
     array_id: GLuint,
     buffers: Vec<&'a mut Buffer>,
 }
 
 impl VertexArray<'_> {
 
-    pub fn from() -> Self {
+    pub fn new() -> Self {
         let mut vertex_array = Self {
             array_id: 0,
             buffers: vec![],
