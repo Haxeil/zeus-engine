@@ -4,12 +4,12 @@ use gl::types::*;
 pub struct IndexBuffer {
 
     buffer_id: GLuint,
-    count: GLsizeiptr,
+    pub count: GLsizeiptr,
 
 }
 
 impl IndexBuffer {
-    pub fn from(data: *const GLushort, count: GLsizeiptr) -> Self {
+    pub fn from(data: &[GLushort], count: isize) -> Self {
         let count = count;
         let mut buffer_id: GLuint = 0;
 
@@ -17,7 +17,7 @@ impl IndexBuffer {
             gl::GenBuffers(1, &mut buffer_id);
             gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, buffer_id);
             let size = count * size_of::<GLushort>() as GLsizeiptr ;
-            gl::BufferData(gl::ELEMENT_ARRAY_BUFFER, size, data as *const _, gl::STATIC_DRAW);
+            gl::BufferData(gl::ELEMENT_ARRAY_BUFFER, size, data.as_ptr() as *const _, gl::STATIC_DRAW);
             // Unbindbuffer;
             gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, 0);
         }
