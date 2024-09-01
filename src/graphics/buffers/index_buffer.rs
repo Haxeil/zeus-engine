@@ -1,6 +1,7 @@
 
 use gl::types::*;
 
+#[derive(Clone)]
 pub struct IndexBuffer {
 
     buffer_id: GLuint,
@@ -28,7 +29,7 @@ impl IndexBuffer {
         }
     }
 
-    pub fn bind(&mut self) {
+    pub fn bind(&self) {
         unsafe {
             gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, self.buffer_id);
         }
