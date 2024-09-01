@@ -5,7 +5,6 @@ mod math;
 mod utils;
 
 
-use std::{mem, os::raw::c_void};
 
 use buffer::Buffer;
 use gl::types::*;
@@ -41,10 +40,10 @@ fn main() {
     ];
 
     let colorsA = [
-        1.0, 0.0, 1.0, 1.0,
-        1.0, 0.0, 1.0, 1.0,
-        1.0, 0.0, 1.0, 1.0,
-        1.0, 0.0, 1.0, 1.0,
+        1.0, 0.0, 0.0, 1.0,
+        0.0, 1.0, 0.0, 1.0,
+        0.0, 0.0, 1.0, 1.0,
+        1.0, 1.0, 1.0, 1.0,
 
     ];
 
@@ -59,7 +58,6 @@ fn main() {
     let mut sprite1 = VertexArray::new();
     let mut sprite2 = VertexArray::new();
 
-    let mut vbo = Buffer::from(&vertices, 4 * 3, 3);
     let mut ibo = IndexBuffer::from(&indicies, 2 * 3);
 
     sprite1.add_buffer(&mut Buffer::from(&vertices, 4 * 3, 3), 0);
