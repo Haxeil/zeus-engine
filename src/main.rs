@@ -6,19 +6,16 @@ mod utils;
 
 
 
-use std::{cell::{Cell, RefCell}, mem, rc::Rc};
+use std::{cell::RefCell, rc::Rc};
 
-use buffer::Buffer;
-use gl::types::*;
 
-use graphics::{buffers::*, renderable2d::Renderable2D, renderer::{Renderer}, shader::Shader, simple2d_renderer::Simple2dRenderer, window::Window};
-use index_buffer::IndexBuffer;
+
+use graphics::{buffers::*, renderable2d::Renderable2D, shader::Shader, simple2d_renderer::Simple2dRenderer, window::Window};
 use mat4::Mat4;
 use math::*;
 use vec2::Vec2;
 use vec3::Vec3;
 use vec4::Vec4;
-use vertex_array::VertexArray;
 
 
 
@@ -56,7 +53,9 @@ fn main() {
         // Now mutate the original position
          // Mutable borrow
         
-        sprite.borrow_mut().position = Vec3::new(pos.x, pos.y, 0.0);
+        let size = sprite.borrow().size;
+        sprite.borrow_mut().position = Vec3::new(pos.x - size.x / 2.0 , pos.y - size.y / 2.0 , 0.0);
+
 
         renderer2d.submit(sprite.clone()); // Immutable borrow
 

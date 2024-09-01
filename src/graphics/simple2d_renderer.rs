@@ -25,10 +25,6 @@ impl<'a> Simple2dRenderer<'a> {
         self.render_queue.push_back(renderable2d);
     }
 
-    pub fn change_pos(&mut self, position: Vec3) {
-        // self.render_queue.front_mut().unwrap().position = position;
-    }
-
     pub fn flush(&mut self) {
         while !self.render_queue.is_empty() {
             // WHY DO I HAVE A DOUBLE REFERENCE !!!!!!!!!!!!!!!!!!!
