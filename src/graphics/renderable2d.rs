@@ -2,28 +2,34 @@ use glutin::dpi::Position;
 
 use crate::{buffer::Buffer, index_buffer::IndexBuffer, vec2::Vec2, vec3::Vec3, vec4::Vec4, vertex_array::{self, VertexArray}};
 
+use super::shader::Shader;
+
 pub struct Renderable2D<'a> {
 
     pub size: Vec2,
     pub position: Vec3,
     pub color: Vec4,
 
-    vertex_array: VertexArray<'a>,
-    index_buffer: IndexBuffer,
+    pub shader: &'a Shader,
+
+    pub vertex_array: VertexArray<'a>,
+    pub index_buffer: IndexBuffer,
 }
+
+
 
 impl<'a> Renderable2D<'a> {
 
-    pub fn from(position: Vec3, size: Vec2, color: Vec4) -> Self {
+    pub fn from(position: Vec3, size: Vec2, color: Vec4, shader: &'a Shader) -> Self {
         let mut vertex_array = VertexArray::new();
 
         let indicies: [u16; 6] = [0, 1, 2, 2, 3, 0];
 
         let verticies = [
             0.0, 0.0, 0.0,
-            0.0, position.y, 0.0,
-            position.x, position.y, 0.0,
-            position.x, 0.0, 0.0,
+            0.0, size.y, 0.0,
+            size.x, size.y, 0.0,
+            size.x, 0.0, 0.0,
 
         ];
 
@@ -46,6 +52,7 @@ impl<'a> Renderable2D<'a> {
 
             vertex_array,
             index_buffer: IndexBuffer::from(&indicies, 6),
+            shader,
             
         }
     }
