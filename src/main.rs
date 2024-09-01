@@ -6,10 +6,12 @@ mod utils;
 
 
 
+use std::{cell::{Cell, RefCell}, mem, rc::Rc};
+
 use buffer::Buffer;
 use gl::types::*;
 
-use graphics::{shader::Shader, window::Window, buffers::*};
+use graphics::{buffers::*, renderable2d::Renderable2D, renderer::{Renderer}, shader::Shader, simple2d_renderer::Simple2dRenderer, window::Window};
 use index_buffer::IndexBuffer;
 use mat4::Mat4;
 use math::*;
@@ -20,52 +22,13 @@ use vertex_array::VertexArray;
 
 
 
+
 fn main() {
     let window = Window::from("zeus-rust".into(), 960, 540);
 
     let mut glfw = window.init();
 
     window.clear_color(1.0, 1.0, 1.0, 1.0);
-
-    let vertices: [f32; 12] = [
-        0.0, 0.0, 0.0, 
-        0.0, 3.0, 0.0, 
-        8.0, 3.0, 0.0, 
-        8.0, 0.0, 0.0,
-    ];
-
-    let indicies: [GLushort; 6] = [
-        0, 1, 2,
-        2, 3, 0,
-    ];
-
-    let colorsA = [
-        1.0, 0.0, 0.0, 1.0,
-        0.0, 1.0, 0.0, 1.0,
-        0.0, 0.0, 1.0, 1.0,
-        1.0, 1.0, 1.0, 1.0,
-
-    ];
-
-
-    let colorsB = [
-        0.2, 0.3, 0.8, 1.0,
-        0.2, 0.3, 0.8, 1.0,
-        0.2, 0.3, 0.8, 1.0,
-        0.2, 0.3, 0.8, 1.0,
-    ];
-
-    let mut sprite1 = VertexArray::new();
-    let mut sprite2 = VertexArray::new();
-
-    let mut ibo = IndexBuffer::from(&indicies, 2 * 3);
-
-    sprite1.add_buffer(&mut Buffer::from(&vertices, 4 * 3, 3), 0);
-    sprite1.add_buffer(&mut Buffer::from(&colorsA, 4 * 4, 4), 1);
-
-    sprite2.add_buffer(&mut  Buffer::from(&vertices, 4 * 3, 3), 0);
-    sprite2.add_buffer(&mut  Buffer::from(&colorsB, 4 * 4, 4), 1);
-
 
 
     let ortho = Mat4::orthographic(0.0, 16.0, 0.0, 9.0, -1.0, 1.0);
@@ -77,34 +40,30 @@ fn main() {
     
     shader.set_uniform_4f("colour", Vec4::new(0.2, 0.1, 0.3, 0.1));
     shader.set_uniform_2f("light_pos", Vec2::new(4.0, 1.5));
-    
 
+    let mut renderer2d = Simple2dRenderer::new();
+
+    let mut sprite = Rc::new(RefCell::new(Renderable2D::from(Vec3::new(5.0, 0.0, 0.0), Vec2::new(2.0, 4.0), Vec4::new(1.0, 0.4, 0.45, 1.0), &shader)));
+    
     while !window.closed() {
         window.clear();
-
-        unsafe {
     
-            let (x, y) = window.mouse_x_y;
-            shader.set_uniform_2f("light_pos", Vec2::new(x as f32 * 16.0 / 960.0,  y as f32 * 9.0 / 540.0));
-            
+        let (x, y) = window.mouse_x_y;
+        let pos = Vec2::new(x as f32 * 16.0 / 960.0, y as f32 * 9.0 / 540.0);
+    
+        shader.set_uniform_2f("light_pos", pos); // Use the temporary variable
 
+        // Now mutate the original position
+         // Mutable borrow
+        
+        sprite.borrow_mut().position = Vec3::new(pos.x, pos.y, 0.0);
 
-            sprite1.bind();
-            ibo.bind();
-            shader.set_uniform_mat4("ml_matrix", Mat4::translation(&Vec3::new(4.0, 3.0, 0.0)));
-            gl::DrawElements(gl::TRIANGLES, ibo.count as i32, gl::UNSIGNED_SHORT, std::ptr::null());
-            sprite1.unbind();
-            ibo.unbind();
+        renderer2d.submit(sprite.clone()); // Immutable borrow
 
-            sprite2.bind();
-            ibo.bind();
-            shader.set_uniform_mat4("ml_matrix", Mat4::translation(&Vec3::new(0.0, 0.0, 0.0)));
-            gl::DrawElements(gl::TRIANGLES, ibo.count as i32, gl::UNSIGNED_SHORT, std::ptr::null());
-            sprite2.unbind();
-            ibo.unbind();
+        renderer2d.flush();
 
-        }
 
         window.update(&mut glfw);
     }
+
 }
