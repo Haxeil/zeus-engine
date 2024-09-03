@@ -3,6 +3,7 @@ use crate::vertex_array::VertexArray;
 
 use super::renderable2d::VertexData;
 use super::renderer::{Render, Renderer};
+use super::static_sprite::StaticSprite;
 use gl::types::*;
 use std::ptr::null;
 use std::rc::Rc;
@@ -40,7 +41,7 @@ impl BatchedRenderer2D<'_> {
             gl::EnableVertexAttribArray(SHADER_VERTEX_INDEX);
             gl::EnableVertexAttribArray(SHADER_COLOR_INDEX);
             gl::VertexAttribPointer(SHADER_VERTEX_INDEX, 3, gl::FLOAT, gl::FALSE, RENDER_VERTEX_SIZE as i32, 0 as *const _);
-            gl::VertexAttribPointer(SHADER_COLOR_INDEX, 4, gl::FLOAT, gl::FALSE, RENDER_VERTEX_SIZE as i32, (3 * gl::FLOAT) as *const _);
+            gl::VertexAttribPointer(SHADER_COLOR_INDEX, 4, gl::FLOAT, gl::FALSE, RENDER_VERTEX_SIZE as i32, (3 * size_of::<f32>()) as *const _);
             gl::BindBuffer(gl::ARRAY_BUFFER, 0);
         }
 
@@ -76,8 +77,8 @@ impl BatchedRenderer2D<'_> {
 }
 
 
-impl Render<'_> for BatchedRenderer2D<'_> {
-    fn submit(&mut self, renderable2d: Rc<RefCell<super::renderable2d::Renderable2D<'_>>>) {
+impl<'a> Render<'a> for BatchedRenderer2D<'a> {
+    fn submit(&mut self, renderable2d: &'a StaticSprite) {
         todo!()
     }
 
