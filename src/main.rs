@@ -10,7 +10,7 @@ use std::{cell::RefCell, rc::Rc};
 
 
 
-use graphics::{buffers::*, renderable2d::Renderable2D, renderer::Render, shader::Shader, simple2d_renderer::Simple2dRenderer, window::Window};
+use graphics::{buffers::*, renderable2d::Renderable2D, renderer::Render, shader::Shader, simple2d_renderer::Simple2dRenderer, static_sprite::StaticSprite, window::Window};
 use mat4::Mat4;
 use math::*;
 use vec2::Vec2;
@@ -39,9 +39,8 @@ fn main() {
     shader.set_uniform_2f("light_pos", Vec2::new(4.0, 1.5));
 
     let mut renderer2d = Simple2dRenderer::new();
-
-    let sprite = Rc::new(RefCell::new(Renderable2D::from(Vec3::new(5.0, 0.0, 0.0), Vec2::new(2.0, 4.0), Vec4::new(1.0, 0.4, 0.45, 1.0), &shader)));
-    let size = sprite.borrow().size;
+    let renderable = Renderable2D::from(Vec3::new(5.0, 0.0, 0.0), Vec2::new(2.0, 4.0), Vec4::new(1.0, 0.4, 0.45, 1.0));
+    let sprite = StaticSprite::from(&shader, &renderable);
 
     while !window.closed() {
         window.clear();
@@ -54,9 +53,8 @@ fn main() {
         // Now mutate the original position
          // Mutable borrow
         
-        // sprite.borrow_mut().position = Vec3::new(pos.x - size.x / 2.0 , pos.y - size.y / 2.0 , 0.0);
 
-        renderer2d.submit(sprite.clone()); // Immutable borrow
+        renderer2d.submit(&sprite); // Immutable borrow
 
         renderer2d.flush();
 
