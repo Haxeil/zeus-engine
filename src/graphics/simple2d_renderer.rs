@@ -2,33 +2,32 @@ use std::{cell::{Cell, RefCell, RefMut}, collections::VecDeque, os::raw::c_void,
 
 use crate::{mat4::Mat4, vec3::Vec3, vec4::Vec4};
 
-use super::{renderable2d::Renderable2D, renderer::{Renderer}};
+use super::{renderable2d::Renderable2D, renderer::{Render, Renderer}};
 use gl::types::*;
 pub struct Simple2dRenderer<'a> {
-    pub render_queue: VecDeque<Rc<RefCell<Renderable2D<'a>>>>,
+    pub renderer: Renderer<'a>,
 }
 
 impl Simple2dRenderer<'_> {
     pub fn new() -> Self {
         Self {
-           render_queue: VecDeque::new(),
+           renderer: Renderer::new(),
         }
     }
 }
 
 
 
-impl<'a> Simple2dRenderer<'a> {
+impl<'a> Render<'a> for Simple2dRenderer<'a> {
 
 
-    pub fn submit(&mut self, renderable2d: Rc<RefCell<Renderable2D<'a>>>) {
-        self.render_queue.push_back(renderable2d);
+    fn submit(&mut self, renderable2d: Rc<RefCell<Renderable2D<'a>>>) {
+        self.renderer.render_queue.push_back(renderable2d);
     }
 
-    pub fn flush(&mut self) {
-        while !self.render_queue.is_empty() {
-            // WHY DO I HAVE A DOUBLE REFERENCE !!!!!!!!!!!!!!!!!!!
-            if let Some(renderable) = self.render_queue.front_mut() {
+    fn flush(&mut self) {
+        while !self.renderer.render_queue.is_empty() {
+            if let Some(renderable) = self.renderer.render_queue.front_mut() {
 
                 let renderable = renderable.borrow_mut();
 
@@ -48,7 +47,7 @@ impl<'a> Simple2dRenderer<'a> {
 
             }
 
-            self.render_queue.pop_front();
+            self.renderer.render_queue.pop_front();
 
             
         }
