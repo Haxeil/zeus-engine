@@ -4,6 +4,12 @@ use crate::{buffer::Buffer, index_buffer::IndexBuffer, vec2::Vec2, vec3::Vec3, v
 
 use super::shader::Shader;
 
+
+pub struct VertexData {
+    vertex: Vec3,
+    color: Vec4,
+}
+
 pub struct Renderable2D<'a> {
 
     pub size: Vec2,
