@@ -1,12 +1,12 @@
 
+use std::ops::Index;
+
 use gl::types::*;
 
 #[derive(Clone)]
 pub struct IndexBuffer {
-
     buffer_id: GLuint,
     pub count: GLsizeiptr,
-
 }
 
 impl IndexBuffer {
@@ -41,5 +41,13 @@ impl IndexBuffer {
 
         }
 
+    }
+}
+
+impl Drop for IndexBuffer {
+    fn drop(&mut self) {
+        unsafe {
+            gl::DeleteBuffers(1, self.buffer_id as *const u32);
+        }
     }
 }

@@ -59,5 +59,9 @@ impl Drop for VertexArray<'_> {
     fn drop(&mut self) {
         self.buffers.clear();
 
+        unsafe {
+            gl::DeleteBuffers(1, self.array_id as *const _);
+        }
+
     }
 }
