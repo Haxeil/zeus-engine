@@ -55,13 +55,19 @@ impl VertexArray<'_> {
     }
 } 
 
-impl Drop for VertexArray<'_> {
-    fn drop(&mut self) {
-        self.buffers.clear();
+// impl Drop for VertexArray<'_> {
+//     fn drop(&mut self) {
 
-        unsafe {
-            gl::DeleteBuffers(1, self.array_id as *const _);
-        }
+//         unsafe {
+//             for buffer in &self.buffers {
+//                 gl::DeleteBuffers(1, buffer.buffer_id as *const _);
+//             }
+//         }
+//         self.buffers.clear();
 
-    }
-}
+//         unsafe {
+//             gl::DeleteBuffers(1, self.array_id as *const _);
+//         }
+
+//     }
+// }

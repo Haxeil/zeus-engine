@@ -44,10 +44,10 @@ impl IndexBuffer {
     }
 }
 
-impl Drop for IndexBuffer {
-    fn drop(&mut self) {
-        unsafe {
-            gl::DeleteBuffers(1, self.buffer_id as *const u32);
-        }
-    }
-}
+// impl Drop for IndexBuffer {
+//     fn drop(&mut self) {
+//         unsafe {
+//             gl::DeleteBuffers(1, self.buffer_id as *const u32);
+//         }
+//     }
+// }

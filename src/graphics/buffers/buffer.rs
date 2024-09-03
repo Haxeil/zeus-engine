@@ -4,7 +4,7 @@ use gl::types::*;
 
 pub struct Buffer {
 
-    buffer_id: GLuint,
+    pub buffer_id: GLuint,
     pub component_count: GLuint,
 
 }
@@ -27,7 +27,6 @@ impl Buffer {
         Self {
             buffer_id,
             component_count,
-
         }
     }
 
@@ -46,10 +45,12 @@ impl Buffer {
     }
 }
 
-impl Drop for Buffer {
-    fn drop(&mut self) {
-        unsafe {
-            gl::DeleteBuffers(1, self.buffer_id as *const _);
-        }
-    }
-}
+// impl Drop for Buffer {
+//     fn drop(&mut self) {
+//         // causes SOME MEMORY PROBLEM
+//         println!("called");
+//         // unsafe {
+//         //     gl::DeleteBuffers(1, self.buffer_id as *const _);
+//         // }
+//     }
+// }
