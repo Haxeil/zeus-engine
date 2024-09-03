@@ -1,9 +1,9 @@
-use std::{cell::{Cell, RefCell}, collections::VecDeque};
+use std::{cell::{Cell, RefCell}, collections::VecDeque, rc::Rc};
 
 use super::renderable2d::Renderable2D;
 
 pub struct Renderer<'a> {
-    pub render_queue: VecDeque<Renderable2D<'a>>,
+    pub render_queue: VecDeque<Rc<RefCell<Renderable2D<'a>>>>,
 
 }   
 
@@ -17,9 +17,9 @@ impl Renderer<'_> {
 }
 
 
-// pub trait Render<'a> {
-//     fn submit(&mut self, renderable2d: &'a Renderable2D<'a>);
-//     fn flush(&mut self);
+pub trait Render<'a> {
+    fn submit(&mut self, renderable2d: Rc<RefCell<Renderable2D<'a>>>);
+    fn flush(&mut self);
 
-// }
+}
 
