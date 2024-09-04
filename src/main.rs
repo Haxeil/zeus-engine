@@ -39,9 +39,10 @@ fn main() {
     shader.set_uniform_2f("light_pos", Vec2::new(4.0, 1.5));
 
     let mut renderer2d = Simple2dRenderer::new();
-    let renderable = Renderable2D::from(Vec3::new(5.0, 0.0, 0.0), Vec2::new(2.0, 4.0), Vec4::new(1.0, 0.4, 0.45, 1.0));
-    let sprite = StaticSprite::from(&shader, &renderable);
-
+    let renderable = Renderable2D::from(Vec3::new(5.0, 2.5, 0.0), Vec2::new(2.0, 4.0), Vec4::new(1.0, 0.4, 0.45, 1.0));
+    let sprite_1 = StaticSprite::from(&shader, &renderable);
+    let renderable = Renderable2D::from(Vec3::new(6.5, 1.5, 0.0), Vec2::new(6.0, 3.0), Vec4::new(0.1, 0.4, 0.45, 1.0));
+    let sprite_2 = StaticSprite::from(&shader, &renderable);
     while !window.closed() {
         window.clear();
     
@@ -54,7 +55,9 @@ fn main() {
          // Mutable borrow
         
 
-        renderer2d.submit(&sprite); // Immutable borrow
+        renderer2d.submit(&sprite_1); // Immutable borrow
+        renderer2d.submit(&sprite_2); // Immutable borrow
+
 
         renderer2d.flush();
 

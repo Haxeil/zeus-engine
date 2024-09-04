@@ -6,16 +6,14 @@ use super::shader::Shader;
 
 
 pub struct VertexData {
-    vertex: Vec3,
-    color: Vec4,
+    pub vertex: Vec3,
+    pub color: Vec4,
 }
 
 pub struct Renderable2D {
-
     pub size: Vec2,
     pub position: Vec3,
     pub color: Vec4,
-
 
 }
 
@@ -29,8 +27,6 @@ impl Renderable2D {
             position,
             size,
             color,
-
-
             
         }
     }
