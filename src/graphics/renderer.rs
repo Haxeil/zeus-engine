@@ -1,13 +1,13 @@
 use std::{cell::{Cell, RefCell}, collections::VecDeque, rc::Rc};
 
-use super::{renderable2d::Renderable2D, static_sprite::StaticSprite};
+use super::{renderable2d::{Renderable, Renderable2D}, sprite::Sprite, static_sprite::StaticSprite};
 
-pub struct Renderer<'a> {
-    pub render_queue: VecDeque<&'a StaticSprite<'a>>,
+pub struct Renderer<'a, T> {
+    pub render_queue: VecDeque<&'a T>,
 
 }   
 
-impl Renderer<'_> {
+impl<T> Renderer<'_, T> {
 
     pub fn new() -> Self {
         Self {
@@ -17,9 +17,12 @@ impl Renderer<'_> {
 }
 
 
-pub trait Render<'a> {
-    fn submit(&mut self, renderable2d: &'a StaticSprite);
-    fn flush(&mut self);
+pub trait Render<'a, T> 
+    where T: Renderable
+{
+    fn submit(&mut self, renderable2d: &'a T);
+    fn flush(&mut self) where T: Renderable;
+
 
 }
 
