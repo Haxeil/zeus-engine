@@ -128,7 +128,7 @@ impl Window {
                     .expect("can't get string from gl");
             let vendor =
                 std::str::from_utf8(std::slice::from_raw_parts(gl::GetString(gl::RENDERER), 24))
-                    .expect("can't get string from gl");         
+                    .expect("can't get string from gl");
 
             println!("GL Version: {version}\nvendor: {vendor}");
         }

@@ -1,4 +1,3 @@
-
 use std::ops::Index;
 
 use gl::types::*;
@@ -17,16 +16,18 @@ impl IndexBuffer {
         unsafe {
             gl::GenBuffers(1, &mut buffer_id);
             gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, buffer_id);
-            let size = count * size_of::<GLushort>() as GLsizeiptr ;
-            gl::BufferData(gl::ELEMENT_ARRAY_BUFFER, size, data.as_ptr() as *const _, gl::STATIC_DRAW);
+            let size = count * size_of::<GLushort>() as GLsizeiptr;
+            gl::BufferData(
+                gl::ELEMENT_ARRAY_BUFFER,
+                size,
+                data.as_ptr() as *const _,
+                gl::STATIC_DRAW,
+            );
             // Unbindbuffer;
             gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, 0);
         }
 
-        Self {
-            buffer_id,
-            count
-        }
+        Self { buffer_id, count }
     }
 
     pub fn bind(&self) {
@@ -38,9 +39,7 @@ impl IndexBuffer {
     pub fn unbind(&self) {
         unsafe {
             gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, 0);
-
         }
-
     }
 }
 

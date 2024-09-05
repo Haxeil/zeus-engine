@@ -8,21 +8,18 @@ pub struct VertexArray<'a> {
 }
 
 impl VertexArray<'_> {
-
     pub fn new() -> Self {
         let mut vertex_array = Self {
             array_id: 0,
             buffers: vec![],
         };
 
-        unsafe  {
+        unsafe {
             gl::GenVertexArrays(1, &mut vertex_array.array_id);
         }
 
         vertex_array
     }
-
-
 }
 
 impl VertexArray<'_> {
@@ -33,13 +30,18 @@ impl VertexArray<'_> {
 
         unsafe {
             gl::EnableVertexAttribArray(index);
-            gl::VertexAttribPointer(index, buffer.component_count as i32, gl::FLOAT, gl::FALSE, 0, 0 as *const _);
+            gl::VertexAttribPointer(
+                index,
+                buffer.component_count as i32,
+                gl::FLOAT,
+                gl::FALSE,
+                0,
+                0 as *const _,
+            );
         }
 
         buffer.unbind();
         self.unbind();
-
-
     }
 
     pub fn bind(&self) {
@@ -53,7 +55,7 @@ impl VertexArray<'_> {
             gl::BindVertexArray(0);
         }
     }
-} 
+}
 
 // impl Drop for VertexArray<'_> {
 //     fn drop(&mut self) {
