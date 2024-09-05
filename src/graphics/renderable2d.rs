@@ -17,6 +17,7 @@ pub struct VertexData {
     pub color: Vec4,
 }
 
+#[derive(Clone, Copy)]
 pub struct Renderable2D {
     pub size: Vec2,
     pub position: Vec3,

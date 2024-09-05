@@ -1,6 +1,7 @@
 use std::cell::Cell;
 
 use glfw::{Context, Glfw, GlfwReceiver, Key, MouseButton, PWindow, WindowEvent};
+use glutin::ContextBuilder;
 
 const MAX_KEY_CODES: usize = 1024;
 const MAX_BUTTONS: usize = 32;
@@ -91,6 +92,9 @@ impl Window {
 
     pub fn init(&mut self) -> Glfw {
         let mut glfw: glfw::Glfw = glfw::init(error_callback).unwrap();
+        glfw.window_hint(glfw::WindowHint::ContextVersion(4, 5));
+        // Optionally, set forward compatibility
+        glfw.window_hint(glfw::WindowHint::OpenGlForwardCompat(true));
 
         (self.window, self.event) = {
             let (mut window, event) = glfw
