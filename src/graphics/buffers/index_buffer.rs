@@ -10,7 +10,7 @@ pub struct IndexBuffer {
 }
 
 impl IndexBuffer {
-    pub fn from(data: &[GLushort], count: isize) -> Self {
+    pub fn from(data: &Vec<GLushort>, count: isize) -> Self {
         let count = count;
         let mut buffer_id: GLuint = 0;
 
