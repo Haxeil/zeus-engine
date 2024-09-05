@@ -5,7 +5,6 @@ use crate::{buffer::Buffer, index_buffer::IndexBuffer, vec2::Vec2, vec3::Vec3, v
 use super::shader::Shader;
 
 
-#[derive(Debug)]
 pub struct VertexData {
     pub vertex: Vec3,
     pub color: Vec4,
@@ -32,8 +31,4 @@ impl Renderable2D {
         }
     }
 
-}
-
-pub trait Renderable {
-    fn get_renderable(&self) -> &Renderable2D;
 }
