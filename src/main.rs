@@ -3,6 +3,8 @@ extern crate glfw;
 mod graphics;
 mod math;
 mod utils;
+use rand::prelude::*;
+
 
 use graphics::{
     batched_renderer2d::BatchedRenderer2D, buffers::*, renderable2d::Renderable2D,
@@ -29,17 +31,26 @@ fn main() {
 
     shader.set_uniform_mat4("pr_matrix", ortho);
 
-    let renderable = Renderable2D::from(
-        Vec3::new(-1003.0, 2.0, 0.0),
-        Vec2::new(100_000_000.0, 7.0),
-        Vec4::new(0.2, 0.0, 1.0, 1.0),
-    );
 
     let mut renderer2d = BatchedRenderer2D::new();
-    let sprite_1 = Sprite::from(renderable);
+    let mut simple_renderer = Simple2dRenderer::new();
+
+    let mut sprites: Vec<StaticSprite> = Vec::new();
+    let mut rng = rand::thread_rng();
 
     shader.set_uniform_2f("light_pos", Vec2::new(4.0, 1.0)); // Use the temporary variable
     shader.set_uniform_4f("colour", Vec4::new(0.2, 0.1, 0.3, 0.1));
+
+    for y in 0..90 {
+        for x in 0..160 {
+            sprites.push(StaticSprite::from(&shader, Renderable2D::from(
+                Vec3::new(x as f32, y as f32, 0.0),
+                Vec2::new(0.9, 0.9),
+                Vec4::new(rng.gen_range(0..1000) as f32 / 1000.0, 1.0, 0.6, 1.0),
+            )));
+        }
+
+    }
 
     while !window.closed() {
         window.clear();
@@ -49,12 +60,10 @@ fn main() {
 
         shader.set_uniform_2f("light_pos", pos); // Use the temporary variable
 
-        renderer2d.begin();
-
-        renderer2d.submit(&sprite_1); // Immutable borrow
-        renderer2d.end();
-
-        <BatchedRenderer2D as Render<'_, Sprite>>::flush(&mut renderer2d);
+        for sprite in sprites.iter() {
+            simple_renderer.submit(sprite);
+            simple_renderer.flush();
+        }
 
         window.update(&mut glfw);
     }

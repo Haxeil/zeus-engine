@@ -4,6 +4,7 @@ use crate::vertex_array::VertexArray;
 
 use super::renderable2d::{Renderable, VertexData};
 use super::renderer::{Render, Renderer};
+use super::shader::Shader;
 use super::sprite::Sprite;
 use super::static_sprite::StaticSprite;
 use gl::types::*;
@@ -172,7 +173,6 @@ where
                 gl::UNSIGNED_SHORT,
                 null(),
             );
-
             self.ibo.unbind(); // Unbind IndexBuffer
             gl::BindVertexArray(0); // Unbind VAO
 
