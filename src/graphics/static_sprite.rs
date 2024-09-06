@@ -10,11 +10,12 @@ use super::{
     shader::Shader,
 };
 
+#[derive(Clone)]
 pub struct StaticSprite<'a> {
     pub renderable2d: Renderable2D,
 
     pub shader: &'a Shader,
-    pub vertex_array: VertexArray<'a>,
+    pub vertex_array: VertexArray,
     pub index_buffer: IndexBuffer,
 }
 
