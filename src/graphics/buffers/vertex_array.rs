@@ -1,13 +1,16 @@
+use std::{cell::RefCell, rc::Rc};
+
 use gl::types::*;
 
 use super::{buffer::Buffer, index_buffer};
 
-pub struct VertexArray<'a> {
+#[derive(Clone)]
+pub struct VertexArray {
     array_id: GLuint,
-    buffers: Vec<&'a mut Buffer>,
+    buffers: Vec<Rc<RefCell<Buffer>>>,
 }
 
-impl VertexArray<'_> {
+impl VertexArray {
     pub fn new() -> Self {
         let mut vertex_array = Self {
             array_id: 0,
@@ -22,7 +25,7 @@ impl VertexArray<'_> {
     }
 }
 
-impl VertexArray<'_> {
+impl VertexArray {
     pub fn add_buffer(&mut self, buffer: &mut Buffer, index: GLuint) {
         self.bind();
 

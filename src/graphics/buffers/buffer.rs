@@ -2,6 +2,7 @@ use std::os::raw::c_void;
 
 use gl::types::*;
 
+#[derive(Clone, Copy)]
 pub struct Buffer {
     pub buffer_id: GLuint,
     pub component_count: GLuint,

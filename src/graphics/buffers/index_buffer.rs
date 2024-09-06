@@ -2,14 +2,14 @@ use std::ops::Index;
 
 use gl::types::*;
 
-#[derive(Clone)]
+#[derive(Clone, Copy)]
 pub struct IndexBuffer {
     buffer_id: GLuint,
     pub count: GLsizeiptr,
 }
 
 impl IndexBuffer {
-    pub fn from(data: &Vec<GLushort>, count: isize) -> Self {
+    pub fn from(data: &[GLushort], count: isize) -> Self {
         let count = count;
         let mut buffer_id: GLuint = 0;
 
